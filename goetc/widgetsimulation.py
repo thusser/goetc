@@ -53,6 +53,7 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
 
     @pyqtSlot(float, name='on_spinExpTime_valueChanged')
     @pyqtSlot(str, name='on_comboFilter_currentTextChanged')
+    @pyqtSlot(str, name='on_spinAperRadius_valueChanged')
     def value_changed(self):
         self.values_changed.emit(self.bandpass(), self.spinExpTime.value())
         self.simulate()
