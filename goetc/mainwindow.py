@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
 
+        # init config
         CONFIG.init(copy=False)
 
         # size
