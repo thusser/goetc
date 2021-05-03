@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
 
         # size
         self.resize(1200, 700)
-        self.setWindowTitle('AstroETC')
+        self.setWindowTitle('GoETC')
 
         # central widget
         self.centralWidget = QWidget()
