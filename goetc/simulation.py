@@ -147,6 +147,7 @@ class Simulation:
         self.eff_pixels = 0
         self.plate_scale = 0
         self.snr = 0
+        self.peak = 0
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
         # extinction
@@ -172,8 +173,6 @@ class Simulation:
         rpix = aper_radius.value * fwhm
         fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
 
-
-
         # calculate different e- contributions
         self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
         n_target = es * fract
@@ -193,7 +192,6 @@ class Simulation:
         # peak
         #self.peak = np.floor((es / (2. * math.pi * sig2) + (n_sky + n_dark) / px_aper) / gain + bias)
         self.peak = np.floor((es / (2. * math.pi * sig2) + n_dark / self.eff_pixels) / gain + bias)
-        print('peak:', self.peak)
 
     def solid_angle_of_aperture(self, aper_radius: u.arcsec, seeing: Angle):
         return math.pi * aper_radius ** 2

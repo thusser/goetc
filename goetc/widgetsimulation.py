@@ -71,16 +71,18 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
         sim.signal_to_noise(self.sky, self.spectrum, exp_time*u.second, Angle(aper_radius*u.arcsec), self.binning)
 
         # misc
-        self.lineEffPixel.setText(f'{sim.eff_pixels:d}')
-        self.linePlateScale.setText(f'{sim.plate_scale:.2f}')
+        self.lineEffPixel.setText(f'{sim.eff_pixels*u.pix:.0f}')
+        self.linePlateScale.setText(f'{sim.plate_scale/u.pix:.2f}')
 
         # aperture
-        self.lineTargetADU.setText(f'{sim.target_counts:0.2f}')
-        self.lineTargetE.setText(f'{sim.target_counts * self.camera.gain:0.2f}')
-        self.lineDarkADU.setText(f'{sim.dark_counts:0.2f}')
-        self.lineDarkE.setText(f'{sim.dark_counts * self.camera.gain:0.2f}')
-        self.lineRONADU.setText(f'{sim.ron_counts:0.2f}')
-        self.lineRONE.setText(f'{sim.ron_counts * self.camera.gain:0.2f}')
+        self.lineTargetADU.setText(f'{sim.target_counts:.0f}')
+        self.lineTargetE.setText(f'{sim.target_counts * self.camera.gain:0.2f}'.replace('electron', 'e'))
+        self.linePeakADU.setText(f'{sim.peak:.0f}')
+        self.linePeakE.setText(f'{sim.peak * self.camera.gain:0.2f}'.replace('electron', 'e'))
+        self.lineDarkADU.setText(f'{sim.dark_counts:.0f}')
+        self.lineDarkE.setText(f'{sim.dark_counts * self.camera.gain:0.2f}'.replace('electron', 'e'))
+        self.lineRONADU.setText(f'{sim.ron_counts:.0f}')
+        self.lineRONE.setText(f'{sim.ron_counts * self.camera.gain:0.2f}'.replace('electron', 'e'))
 
         # S/N
         self.spinSNR.setValue(sim.snr)
