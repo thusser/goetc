@@ -41,7 +41,7 @@ class Ui_WidgetSky(object):
         self.label_25.setObjectName("label_25")
         self.gridLayout.addWidget(self.label_25, 2, 0, 1, 1)
         self.spinAirmass = QtWidgets.QDoubleSpinBox(self.groupBox)
-        self.spinAirmass.setProperty("value", 1.0)
+        self.spinAirmass.setProperty("value", 2.0)
         self.spinAirmass.setObjectName("spinAirmass")
         self.gridLayout.addWidget(self.spinAirmass, 2, 1, 1, 1)
         self.label_26 = QtWidgets.QLabel(self.groupBox)

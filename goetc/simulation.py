@@ -150,16 +150,16 @@ class Simulation:
         self.peak = 0
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
-        # extinction
-        extinct = mag2flux(sky.extinction * sky.airmass)
-
+        # gain and bias
         gain = self.camera.gain[binning - 1] if isinstance(self.camera.gain, list) else self.camera.gain
         bias = self.camera.bias[binning - 1] if isinstance(self.camera.bias, list) else self.camera.bias
 
         # apply QE and filter to target spectrum
         target = self.filter.apply(self.camera.qe.apply(target))
 
-        #flux = self.filter.integrate(target) * extinct
+        # extinction
+        extinct = mag2flux(sky.extinction * sky.airmass)
+        target.data.y *= extinct
 
         # sky flux
         #sflux = sky.flux(self.filter) * self.filter.bandwidth * self.solid_angle_of_aperture(aper_radius, sky.seeing)
@@ -167,14 +167,17 @@ class Simulation:
         # electrons from target
         es = self.electrons(target, exp_time)
 
+        # effective aperture and plate scale
+        self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
         self.plate_scale = self.arcsec_per_pixel(binning)
+
+
         fwhm = sky.seeing / self.plate_scale
         sig2 = fwhm**2 / (8. * math.log(2))
         rpix = aper_radius.value * fwhm
         fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
 
         # calculate different e- contributions
-        self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
         n_target = es * fract
         #n_sky = self.electrons(sflux, exp_time)
         n_ron = self.eff_pixels * self.camera.readout_noise * gain
