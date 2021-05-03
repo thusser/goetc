@@ -1,0 +1,132 @@
+filename,name
+uko5v.csv,O5 V
+uko8iii.csv,O8 III
+uko9v.csv,O9 V
+ukb0i.csv,B0 I
+ukb0v.csv,B0 V
+ukb1i.csv,B1 I
+ukb12iii.csv,B1-2 III
+ukb1v.csv,B1 V
+ukb2ii.csv,B2 II
+ukb2iv.csv,B2 IV
+ukb3i.csv,B3 I
+ukb3iii.csv,B3 III
+ukb3v.csv,B3 V
+ukb5i.csv,B5 I
+ukb5ii.csv,B5 II
+ukb5iii.csv,B5 III
+ukb57v.csv,B5-7 V
+ukb6iv.csv,B6 IV
+ukb8i.csv,B8 I
+ukb8v.csv,B8 V
+ukb9iii.csv,B9 III
+ukb9v.csv,B9 V
+uka0i.csv,A0 I
+uka0iii.csv,A0 III
+uka0iv.csv,A0 IV
+uka0v.csv,A0 V
+uka2i.csv,A2 I
+uka2v.csv,A2 V
+uka3iii.csv,A3 III
+uka3v.csv,A3 V
+uka47iv.csv,A4-7 IV
+uka5iii.csv,A5 III
+uka5v.csv,A5 V
+uka7iii.csv,A7 III
+uka7v.csv,A7 V
+ukf0i.csv,F0 I
+ukf0ii.csv,F0 II
+ukf0iii.csv,F0 III
+ukf02iv.csv,F0-2 IV
+ukf0v.csv,F0 V
+ukf2ii.csv,F2 II
+ukf2iii.csv,F2 III
+ukf2v.csv,F2 V
+ukf5i.csv,F5 I
+ukf5iii.csv,F5 III
+ukf5iv.csv,F5 IV
+ukf5v.csv,F5 V
+ukwf5v.csv,F5 V (metal-weak)
+ukf6v.csv,F6 V
+ukrf6v.csv,F6 V (metal-rich)
+ukf8i.csv,F8 I
+ukf8iv.csv,F8 IV
+ukf8v.csv,F8 V
+ukwf8v.csv,F8 V (metal-weak)
+ukrf8v.csv,F8 V (metal-rich)
+ukg0i.csv,G0 I
+ukg0iii.csv,G0 III
+ukg0iv.csv,G0 IV
+ukg0v.csv,G0 V
+ukwg0v.csv,G0 V (metal-weak)
+ukrg0v.csv,G0 V (metal-rich)
+ukg2i.csv,G2 I
+ukg2iv.csv,G2 IV
+ukg2v.csv,G2 V
+ukg5i.csv,G5 I
+ukg5ii.csv,G5 II
+ukg5iii.csv,G5 III
+ukwg5iii.csv,G5 III (metal-weak)
+ukrg5iii.csv,G5 III (metal-rich)
+ukg5iv.csv,G5 IV
+ukg5v.csv,G5 V
+ukwg5v.csv,G5 V (metal-weak)
+ukrg5v.csv,G5 V (metal-rich)
+ukg8i.csv,G8 I
+ukg8iii.csv,G8 III
+ukwg8iii.csv,G8 III (metal-weak)
+ukg8iv.csv,G8 IV
+ukg8v.csv,G8 V
+ukk01ii.csv,K0-1 II
+ukk0iii.csv,K0 III
+ukwk0iii.csv,K0 III (metal-weak)
+ukrk0iii.csv,K0 III (metal-rich)
+ukk0iv.csv,K0 IV
+ukk0v.csv,K0 V
+ukrk0v.csv,K0 V (metal-rich)
+ukk1iii.csv,K1 III
+ukwk1iii.csv,K1 III (metal-weak)
+ukrk1iii.csv,K1 III (metal-rich)
+ukk1iv.csv,K1 IV
+ukk2i.csv,K2 I
+ukk2iii.csv,K2 III
+ukwk2iii.csv,K2 III (metal-weak)
+ukrk2iii.csv,K2 III (metal-rich)
+ukk2v.csv,K2 V
+ukk3i.csv,K3 I
+ukk34ii.csv,K3-4 II
+ukk3iii.csv,K3 III
+ukwk3iii.csv,K3 III (metal-weak)
+ukrk3iii.csv,K3 III (metal-rich)
+ukk3iv.csv,K3 IV
+ukk3v.csv,K3 V
+ukk4i.csv,K4 I
+ukk4iii.csv,K4 III
+ukwk4iii.csv,K4 III (metal-weak)
+ukrk4iii.csv,K4 III (metal-rich)
+ukk4v.csv,K4 V
+ukk5iii.csv,K5 III
+ukrk5iii.csv,K5 III (metal-rich)
+ukk5v.csv,K5 V
+ukk7v.csv,K7 V
+ukm0iii.csv,M0 III
+ukm0v.csv,M0 V
+ukm1iii.csv,M1 III
+ukm10iii.csv,M10 III
+ukm1v.csv,M1 V
+ukm2i.csv,M2 I
+ukm2iii.csv,M2 III
+ukm2v.csv,M2 V
+ukm2p5v.csv,M2.5 V
+ukm3ii.csv,M3 II
+ukm3iii.csv,M3 III
+ukm3v.csv,M3 V
+ukm4iii.csv,M4 III
+ukm4v.csv,M4 V
+ukm5iii.csv,M5 III
+ukm5v.csv,M5 V
+ukm6iii.csv,M6 III
+ukm6v.csv,M6 V
+ukm7iii.csv,M7 III
+ukm8iii.csv,M8 III
+ukm9iii.csv,M9 III

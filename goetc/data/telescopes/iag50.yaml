@@ -1,0 +1,5 @@
+name: IAG50cm
+aperture: 0.5
+f_ratio: 10.0
+reflectivity: 0.81
+obscuration: 0.05

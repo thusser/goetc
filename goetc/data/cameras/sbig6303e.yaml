@@ -1,0 +1,7 @@
+name: SBIG STL-6303e
+pixel_size: 9.0
+gain: [1.4, 2.3, 2.3]
+readout_noise: 13
+dark_current: 0.02
+qe: KAF6303e
+bias: [1000, 675, 1000]
