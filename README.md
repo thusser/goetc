@@ -1,6 +1,6 @@
 # GoETC
 
-Exposorure time calculator for the IAG's telescope.
+Exposure time calculator for the IAG's telescope.
 
 Download::
 
