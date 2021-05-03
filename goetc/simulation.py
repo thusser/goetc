@@ -171,7 +171,7 @@ class Simulation:
         self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
         self.plate_scale = self.arcsec_per_pixel(binning)
 
-
+        # calculate fraction of total in aperture
         fwhm = sky.seeing / self.plate_scale
         sig2 = fwhm**2 / (8. * math.log(2))
         rpix = aper_radius.value * fwhm
