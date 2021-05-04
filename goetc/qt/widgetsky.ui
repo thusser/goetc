@@ -64,6 +64,9 @@
         <property name="suffix">
          <string> &quot;</string>
         </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
         <property name="value">
          <double>1.000000000000000</double>
         </property>
@@ -94,6 +97,9 @@
        <widget class="QDoubleSpinBox" name="spinExtinction">
         <property name="suffix">
          <string> mag/am</string>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
         </property>
         <property name="value">
          <double>0.200000000000000</double>
