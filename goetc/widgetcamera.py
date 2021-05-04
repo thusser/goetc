@@ -64,6 +64,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
 
     @pyqtSlot(float, name='on_spinPixelSize_valueChanged')
     @pyqtSlot(float, name='on_spinRON_valueChanged')
+    @pyqtSlot(float, name='on_spinDark_valueChanged')
     @pyqtSlot(float, name='on__valueChanged')
     @pyqtSlot(float, name='on_spinGain_valueChanged')
     @pyqtSlot(float, name='on_spinBias_valueChanged')
