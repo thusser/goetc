@@ -34,7 +34,7 @@ class Config:
         self._path: str = ''
         self._config = {}
 
-    def init(self, copy: bool = True):
+    def init(self, copy: bool = False):
         # path to data
         data_path = os.path.join(os.path.abspath(os.path.dirname(goetc.__file__)), 'data')
 
