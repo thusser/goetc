@@ -118,14 +118,20 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_20">
            <property name="text">
-            <string>f/ratio:</string>
+            <string>Focal length:</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="spinFratio">
+          <widget class="QDoubleSpinBox" name="spinFocalLength">
+           <property name="suffix">
+            <string> mm</string>
+           </property>
+           <property name="maximum">
+            <double>100000.000000000000000</double>
+           </property>
            <property name="value">
-            <double>7.000000000000000</double>
+            <double>5000.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -138,8 +144,14 @@
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="spinReflectivity">
+           <property name="suffix">
+            <string> %</string>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
            <property name="value">
-            <double>0.700000000000000</double>
+            <double>70.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -151,7 +163,14 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QDoubleSpinBox" name="spinObscuration"/>
+          <widget class="QDoubleSpinBox" name="spinObscuration">
+           <property name="suffix">
+            <string> %</string>
+           </property>
+           <property name="maximum">
+            <double>100.000000000000000</double>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

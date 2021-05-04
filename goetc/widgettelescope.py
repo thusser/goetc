@@ -34,10 +34,10 @@ class WidgetTelescope(QWidget, Ui_WidgetTelescope):
         # fill it
         self.updating = True
         telescope = CONFIG.telescope(name)
-        self.spinAperture.setValue(telescope.aperture.to(u.meter).value)
-        self.spinFratio.setValue(telescope.f_ratio)
-        self.spinReflectivity.setValue(telescope.reflectivity)
-        self.spinObscuration.setValue(telescope.obscuration)
+        self.spinAperture.setValue(telescope.aperture.to(u.m).value)
+        self.spinFocalLength.setValue(telescope.focal_length.to(u.mm).value)
+        self.spinReflectivity.setValue(telescope.reflectivity * 100.)
+        self.spinObscuration.setValue(telescope.obscuration * 100.)
         self.updating = False
 
         # update once
@@ -57,7 +57,7 @@ class WidgetTelescope(QWidget, Ui_WidgetTelescope):
 
     def telescope(self) -> Telescope:
         return Telescope(name=self.comboPreset.currentText(),
-                         aperture=self.spinAperture.value(),
-                         f_ratio=self.spinFratio.value(),
-                         reflectivity=self.spinReflectivity.value(),
-                         obscuration=self.spinObscuration.value())
+                         aperture=self.spinAperture.value() * u.m,
+                         focal_length=self.spinFocalLength.value() * u.mm,
+                         reflectivity=self.spinReflectivity.value() / 100.,
+                         obscuration=self.spinObscuration.value() / 100.)

@@ -54,15 +54,14 @@ def create_objects(config: dict, group: str, cls: T) -> Dict[str, T]:
 
 
 class Telescope:
-    def __init__(self, name: str, aperture: float, f_ratio: float, reflectivity: float, obscuration: float):
+    def __init__(self, name: str, aperture: float, focal_length: float, reflectivity: float, obscuration: float):
         # set it
         self.name = name
         self.aperture = c(aperture, u.meter)
-        self.f_ratio = f_ratio
-        self.focal_length = aperture * f_ratio * u.meter
-        self.plate_scale = (1. * u.radian / self.focal_length).to(u.arcsec/u.meter)
-        self.reflectivity = reflectivity
-        self.obscuration = obscuration
+        self.focal_length = c(focal_length, u.m, float_unit=u.mm)
+        self.plate_scale = (1. * u.radian / self.focal_length).to(u.arcsec/u.m)
+        self.reflectivity = reflectivity / 100.
+        self.obscuration = obscuration / 100.
 
     def effective_area(self):
         return math.pi * self.aperture**2 * (1. - self.obscuration) * self.reflectivity
