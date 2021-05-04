@@ -150,8 +150,8 @@ class Simulation:
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
         # gain and bias
-        gain = self.camera.gain[binning - 1] if isinstance(self.camera.gain, list) else self.camera.gain
-        bias = self.camera.bias[binning - 1] if isinstance(self.camera.bias, list) else self.camera.bias
+        gain = self.camera.gain[binning - 1] if hasattr(self.camera.gain, '__iter__') else self.camera.gain
+        bias = self.camera.bias[binning - 1] if hasattr(self.camera.bias, '__iter__') else self.camera.bias
 
         # apply QE and filter to target spectrum
         target = self.filter.apply(self.camera.qe.apply(target))
