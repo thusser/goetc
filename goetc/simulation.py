@@ -185,7 +185,7 @@ class Simulation:
         # calculate fraction of total in aperture
         fwhm = sky.seeing / self.plate_scale
         sig2 = fwhm**2 / (8. * math.log(2))
-        rpix = aper_radius.value * fwhm
+        rpix = aper_radius / self.plate_scale
         fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
 
         # calculate different e- contributions
