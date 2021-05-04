@@ -15,7 +15,7 @@ class XYData:
         self.y = y
 
         if filename is not None:
-            data = pd.read_csv(filename, index_col=False, names=['x', 'y'])
+            data = pd.read_csv(filename, index_col=False, names=['x', 'y'], comment='#')
             self.x = data['x'].values * x_unit
             self.y = data['y'].values * y_unit
 
