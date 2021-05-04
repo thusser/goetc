@@ -86,6 +86,18 @@ class Camera:
             self.qe_name = qe
             self.qe = CONFIG.sensor(qe)
 
+    def bias_binning(self, binning: int):
+        try:
+            return self.bias[binning - 1]
+        except TypeError:
+            return self.bias
+
+    def gain_binning(self, binning: int):
+        try:
+            return self.gain[binning - 1]
+        except TypeError:
+            return self.gain
+
 
 class Source:
     def __init__(self, magnitude: float):
@@ -150,8 +162,8 @@ class Simulation:
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
         # gain and bias
-        gain = self.camera.gain[binning - 1] if hasattr(self.camera.gain, '__iter__') else self.camera.gain
-        bias = self.camera.bias[binning - 1] if hasattr(self.camera.bias, '__iter__') else self.camera.bias
+        gain = self.camera.gain_binning(binning)
+        bias = self.camera.bias_binning(binning)
 
         # apply QE and filter to target spectrum
         target = self.filter.apply(self.camera.qe.apply(target))
