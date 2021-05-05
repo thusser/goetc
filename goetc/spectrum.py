@@ -57,6 +57,9 @@ class QE:
         # load data
         self.data = XYData(filename=filename, x=x, y=y, y_unit=u.dimensionless_unscaled)
 
+        # y from percent to 0..1
+        self.data.y /= 100.
+
     def apply(self, spec: Spectrum) -> Spectrum:
         qe = self.data.resample(spec.data)
         return Spectrum(x=spec.x, y=spec.y * qe.y)
