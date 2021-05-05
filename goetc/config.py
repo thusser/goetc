@@ -67,7 +67,6 @@ class Config:
         self._config[DATA.PROFILE] = {
             PROFILE.QE: self._list_csv(DATA.PROFILE, PROFILE.QE)
         }
-        print(self._config[DATA.PROFILE])
         self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
