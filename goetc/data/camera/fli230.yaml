@@ -4,4 +4,5 @@ gain: 1.85
 readout_noise: 13
 dark_current: 0.2
 qe: E2V Broadband BI
+optics: [FLI Window F116]
 bias: [944, 1500, 2334]

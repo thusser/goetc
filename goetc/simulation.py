@@ -70,7 +70,8 @@ class Telescope:
 
 class Camera:
     def __init__(self, name: str, pixel_size: float, gain: Union[float, List[float]], readout_noise: float,
-                 dark_current: float, qe: Union[float, XYData, str], bias: Union[float, List[float]]):
+                 dark_current: float, qe: Union[float, XYData, str], bias: Union[float, List[float]],
+                 optics: List[Union[str, XYData]] = None):
         # set it
         self.name = name
         self.pixel_size = c(pixel_size, u.meter, float_unit=u.micron)
@@ -79,6 +80,7 @@ class Camera:
         self.dark_current = c(dark_current, u.adu/u.second)
         self.bias = c(bias, u.adu)
         self.qe = qe
+        self.optics = optics
 
         # QE given as string?
         self.qe_name = None
