@@ -22,7 +22,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         self.checkDetails.stateChanged.connect(self.widgetDetails.setVisible)
 
         # QE
-        self.comboSensor.addItems(CONFIG.group_entries(DATA.PROFILE, PROFILE.QE.value))
+        self.comboSensor.addItems(CONFIG.group_entries(DATA.PROFILE, PROFILE.QE))
         self.comboQEType.currentIndexChanged.connect(self.stackedQE.setCurrentIndex)
 
         # add telescope presets and select first
