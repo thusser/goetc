@@ -1,0 +1,7 @@
+name: FLI PL230
+pixel_size: 18.0
+gain: 1.85
+readout_noise: 13
+dark_current: 0.2
+qe: E2V Broadband BI
+bias: [944, 1500, 2334]
