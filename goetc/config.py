@@ -17,7 +17,7 @@ class DATA(Enum):
     TELESCOPES = 'telescopes'
     CAMERAS = 'cameras'
     SENSORS = 'sensors'
-    FILTERS = 'filters'
+    BANDPASSES = 'bandpasses'
     SPECTRA = 'spectra'
     
 
@@ -57,9 +57,9 @@ class Config:
         if not os.path.exists(self._path):
             self._path = data_path
 
-        # find all cameras, filters, etc
+        # find all cameras, bandpasses, etc
         self._config[DATA.CAMERAS] = self._list_yaml(DATA.CAMERAS)
-        self._config[DATA.FILTERS] = self._list_csv(DATA.FILTERS, recursive=True)
+        self._config[DATA.BANDPASSES] = self._list_csv(DATA.BANDPASSES, recursive=True)
         self._config[DATA.SENSORS] = self._list_csv(DATA.SENSORS)
         self._config[DATA.TELESCOPES] = self._list_yaml(DATA.TELESCOPES)
         self._config[DATA.SPECTRA] = self._list_csv(DATA.SPECTRA)
@@ -155,7 +155,7 @@ class Config:
 
     def bandpass(self, name: str):
         group, bandpass = name.split('/')
-        return Bandpass(self.path(self._config[DATA.FILTERS][group][bandpass], category=DATA.FILTERS, group=group))
+        return Bandpass(self.path(self._config[DATA.BANDPASSES][group][bandpass], category=DATA.BANDPASSES, group=group))
 
     def spectrum(self, name: str):
         return Spectrum(self.path(self._config[DATA.SPECTRA][name], category=DATA.SPECTRA))

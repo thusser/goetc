@@ -21,8 +21,8 @@ class WidgetTarget(QWidget, Ui_WidgetTarget):
         # list spectra
         self.comboTemplate.addItems(CONFIG.groups(DATA.SPECTRA))
 
-        # list filters
-        self.comboFilter.addItems(CONFIG.recursive_groups(DATA.FILTERS))
+        # list bandpasses
+        self.comboFilter.addItems(CONFIG.recursive_groups(DATA.BANDPASSES))
 
         # finished updating
         self.updating = False

@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
             self.ax.set_xlabel(spectrum.x.unit)
             self.ax.set_ylabel(spectrum.y.unit)
 
-        # plot filters
+        # plot bandpasses
         bandpass = self.widget_simulation.bandpass()
         if bandpass is not None:
             self.ax2.plot(bandpass.x, bandpass.y, 'r', lw=1, label='Dest. bandpass')

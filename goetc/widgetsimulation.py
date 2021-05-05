@@ -24,8 +24,8 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
         self.filter: Optional[Bandpass] = None
         self.binning = 1
 
-        # get all filters
-        self.comboFilter.addItems(CONFIG.recursive_groups(DATA.FILTERS))
+        # get all bandpasses
+        self.comboFilter.addItems(CONFIG.recursive_groups(DATA.BANDPASSES))
 
     @pyqtSlot(Telescope)
     def set_telescope(self, telescope: Telescope):
