@@ -14,11 +14,11 @@ from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 
 
 class DATA(Enum):
-    TELESCOPES = 'telescopes'
-    CAMERAS = 'cameras'
-    SENSORS = 'sensors'
-    BANDPASSES = 'bandpasses'
-    SPECTRA = 'spectra'
+    TELESCOPE = 'telescope'
+    CAMERA = 'camera'
+    SENSOR = 'sensor'
+    BANDPASS = 'bandpass'
+    SPECTRUM = 'spectrum'
     
 
 def snake(text: str):
@@ -58,11 +58,11 @@ class Config:
             self._path = data_path
 
         # find all cameras, bandpasses, etc
-        self._config[DATA.CAMERAS] = self._list_yaml(DATA.CAMERAS)
-        self._config[DATA.BANDPASSES] = self._list_csv(DATA.BANDPASSES, recursive=True)
-        self._config[DATA.SENSORS] = self._list_csv(DATA.SENSORS)
-        self._config[DATA.TELESCOPES] = self._list_yaml(DATA.TELESCOPES)
-        self._config[DATA.SPECTRA] = self._list_csv(DATA.SPECTRA)
+        self._config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
+        self._config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
+        self._config[DATA.SENSOR] = self._list_csv(DATA.SENSOR)
+        self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
+        self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
     def _list_yaml(self, category: DATA, group: str = None):
         filenames = [os.path.basename(f) for f in glob.glob(self._data_path('*.yaml', category=category))]
@@ -136,29 +136,29 @@ class Config:
         return path if filename is None else os.path.join(path, filename)
 
     def camera(self, name: str):
-        if name not in self._config[DATA.CAMERAS]:
+        if name not in self._config[DATA.CAMERA]:
             raise ValueError('Camera "%s" not found.' % name)
-        filename = self._config[DATA.CAMERAS][name]
-        return Camera(**self._load_yaml(filename, category=DATA.CAMERAS))
+        filename = self._config[DATA.CAMERA][name]
+        return Camera(**self._load_yaml(filename, category=DATA.CAMERA))
 
     def sensor(self, name: str):
-        if name not in self._config[DATA.SENSORS]:
+        if name not in self._config[DATA.SENSOR]:
             raise ValueError('Sensor "%s" not found.' % name)
-        filename = self._config[DATA.SENSORS][name]
-        return QE(self.path(filename, DATA.SENSORS))
+        filename = self._config[DATA.SENSOR][name]
+        return QE(self.path(filename, DATA.SENSOR))
 
     def telescope(self, name: str):
-        if name not in self._config[DATA.TELESCOPES]:
+        if name not in self._config[DATA.TELESCOPE]:
             raise ValueError('Telescope "%s" not found.' % name)
-        filename = self._config[DATA.TELESCOPES][name]
-        return Telescope(**self._load_yaml(filename, category=DATA.TELESCOPES))
+        filename = self._config[DATA.TELESCOPE][name]
+        return Telescope(**self._load_yaml(filename, category=DATA.TELESCOPE))
 
     def bandpass(self, name: str):
         group, bandpass = name.split('/')
-        return Bandpass(self.path(self._config[DATA.BANDPASSES][group][bandpass], category=DATA.BANDPASSES, group=group))
+        return Bandpass(self.path(self._config[DATA.BANDPASS][group][bandpass], category=DATA.BANDPASS, group=group))
 
     def spectrum(self, name: str):
-        return Spectrum(self.path(self._config[DATA.SPECTRA][name], category=DATA.SPECTRA))
+        return Spectrum(self.path(self._config[DATA.SPECTRUM][name], category=DATA.SPECTRUM))
 
 
 CONFIG = Config()

@@ -22,13 +22,13 @@ class WidgetTelescope(QWidget, Ui_WidgetTelescope):
         self.checkDetails.stateChanged.connect(self.widgetDetails.setVisible)
 
         # add telescope presets and select first
-        self.comboPreset.addItems([''] + CONFIG.groups(DATA.TELESCOPES))
+        self.comboPreset.addItems([''] + CONFIG.groups(DATA.TELESCOPE))
         self.comboPreset.setCurrentIndex(1)
 
     @pyqtSlot(str, name='on_comboPreset_currentTextChanged')
     def on_preset_changed(self, name: str):
         # does telescope exist?
-        if name not in CONFIG.groups(DATA.TELESCOPES):
+        if name not in CONFIG.groups(DATA.TELESCOPE):
             return
         
         # fill it

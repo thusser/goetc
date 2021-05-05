@@ -22,11 +22,11 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         self.checkDetails.stateChanged.connect(self.widgetDetails.setVisible)
 
         # QE
-        self.comboSensor.addItems(CONFIG.groups(DATA.SENSORS))
+        self.comboSensor.addItems(CONFIG.groups(DATA.SENSOR))
         self.comboQEType.currentIndexChanged.connect(self.stackedQE.setCurrentIndex)
 
         # add telescope presets and select first
-        self.comboPreset.addItems([''] + CONFIG.groups(DATA.CAMERAS))
+        self.comboPreset.addItems([''] + CONFIG.groups(DATA.CAMERA))
         self.comboPreset.setCurrentIndex(1)
 
         # finished updating
@@ -40,7 +40,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         binning = self.spinBinning.value()
 
         # does camera exist?
-        if preset not in CONFIG.groups(DATA.CAMERAS):
+        if preset not in CONFIG.groups(DATA.CAMERA):
             return
 
         # fill it
