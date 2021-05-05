@@ -3,6 +3,7 @@ import os
 from typing import Dict, TypeVar, Tuple, List, Union
 import astropy.units as u
 import numpy as np
+import scipy
 from astropy import constants as const
 import yaml
 import inspect
@@ -159,6 +160,7 @@ class Simulation:
         self.plate_scale = 0
         self.snr = 0
         self.peak = 0
+        self.integrated_peak = 0
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
         # gain and bias
@@ -205,7 +207,11 @@ class Simulation:
 
         # peak
         #self.peak = np.floor((es / (2. * math.pi * sig2) + (n_sky + n_dark) / px_aper) / gain + bias)
-        self.peak = np.floor((es / (2. * math.pi * sig2) + n_dark / self.eff_pixels) / gain + bias)
+        A = es / (2. * math.pi * sig2)
+        self.peak = np.floor((A + n_dark / self.eff_pixels) / gain + bias)
+        scale = scipy.special.erf(1/np.sqrt(8))**2
+        self.integrated_peak = np.floor((A * scale + n_dark / self.eff_pixels) / gain + bias)
+        print(sky.seeing, self.peak, self.integrated_peak)
 
     def solid_angle_of_aperture(self, aper_radius: u.arcsec, seeing: Angle):
         return math.pi * aper_radius ** 2
