@@ -49,8 +49,8 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         self.spinPixelSize.setValue(camera.pixel_size.to(u.micron).value)
         self.spinRON.setValue(camera.readout_noise.value)
         self.spinDark.setValue(camera.dark_current.value)
-        self.spinGain.setValue(camera.gain[binning - 1].value)
-        self.spinBias.setValue(camera.bias[binning - 1].value)
+        self.spinGain.setValue(camera.gain_binning(binning).value)
+        self.spinBias.setValue(camera.bias_binning(binning).value)
         if isinstance(camera.qe, float):
             self.comboQEType.setCurrentIndex(0)
             self.spinQE.setValue(camera.qe)
