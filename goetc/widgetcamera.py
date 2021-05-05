@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget
 import astropy.units as u
 
 from .qt.widgetcamera_ui import Ui_WidgetCamera
-from .config import CONFIG, DATA, TRANSMISSION
+from .config import CONFIG, DATA, PROFILE
 from .simulation import Camera
 
 
@@ -22,7 +22,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         self.checkDetails.stateChanged.connect(self.widgetDetails.setVisible)
 
         # QE
-        self.comboSensor.addItems(CONFIG.group_entries(DATA.TRANSMISSION, TRANSMISSION.SENSOR.value))
+        self.comboSensor.addItems(CONFIG.group_entries(DATA.PROFILE, PROFILE.QE.value))
         self.comboQEType.currentIndexChanged.connect(self.stackedQE.setCurrentIndex)
 
         # add telescope presets and select first

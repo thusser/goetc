@@ -16,13 +16,13 @@ from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 class DATA(Enum):
     TELESCOPE = 'telescope'
     CAMERA = 'camera'
-    TRANSMISSION = 'transmission'
+    PROFILE = 'profile'
     BANDPASS = 'bandpass'
     SPECTRUM = 'spectrum'
 
 
-class TRANSMISSION(Enum):
-    SENSOR = 'sensor'
+class PROFILE(Enum):
+    QE = 'qe'
     
 
 def snake(text: str):
@@ -64,7 +64,7 @@ class Config:
         # find all cameras, bandpasses, etc
         self._config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
         self._config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
-        self._config[DATA.TRANSMISSION] = self._list_csv(DATA.TRANSMISSION, recursive=True)
+        self._config[DATA.PROFILE] = self._list_csv(DATA.PROFILE, recursive=True)
         self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
@@ -146,10 +146,10 @@ class Config:
         return Camera(**self._load_yaml(filename, category=DATA.CAMERA))
 
     def sensor(self, name: str):
-        if name not in self._config[DATA.TRANSMISSION][TRANSMISSION.SENSOR.value]:
+        if name not in self._config[DATA.PROFILE][PROFILE.QE.value]:
             raise ValueError('Sensor "%s" not found.' % name)
-        filename = self._config[DATA.TRANSMISSION][TRANSMISSION.SENSOR.value][name]
-        return QE(self.path(filename, DATA.TRANSMISSION, TRANSMISSION.SENSOR.value))
+        filename = self._config[DATA.PROFILE][PROFILE.QE.value][name]
+        return QE(self.path(filename, DATA.PROFILE, PROFILE.QE.value))
 
     def telescope(self, name: str):
         if name not in self._config[DATA.TELESCOPE]:
