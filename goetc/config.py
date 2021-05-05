@@ -16,14 +16,11 @@ from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 class DATA(Enum):
     TELESCOPE = 'telescope'
     CAMERA = 'camera'
-    PROFILE = 'profile'
+    QE = 'qe'
+    OPTICS = 'optics'
     BANDPASS = 'bandpass'
     SPECTRUM = 'spectrum'
 
-
-class PROFILE(Enum):
-    QE = 'qe'
-    
 
 def snake(text: str):
     return re.sub(r'(?<!^)(?=[A-Z])', '_', text).lower().replace(' ', '')
@@ -64,9 +61,8 @@ class Config:
         # find all cameras, bandpasses, etc
         self._config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
         self._config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
-        self._config[DATA.PROFILE] = {
-            PROFILE.QE: self._list_csv(DATA.PROFILE, PROFILE.QE)
-        }
+        self._config[DATA.QE] = self._list_csv(DATA.QE)
+        self._config[DATA.OPTICS] = self._list_csv(DATA.OPTICS)
         self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
@@ -90,8 +86,7 @@ class Config:
             return {row['name']: row['filename'] for _, row in data.iterrows()}
 
     def _data_path(self, filename: str = None, category: DATA = None, group: str = None):
-        g = group.value if hasattr(group, 'value') else group
-        parts = [self._path] + [p for p in [category.value, g, filename] if p is not None]
+        parts = [self._path] + [p for p in [category.value, group, filename] if p is not None]
         return os.path.join(*parts)
 
     def path(self, filename: str = None, category: DATA = None, group: str = None):
@@ -108,7 +103,7 @@ class Config:
             if group is not None:
                 if group not in self._config[category]:
                     raise ValueError('Group group not found.')
-                parts += [group.value if hasattr(group, 'value') else group]
+                parts += [group]
 
         # build it
         parts += [filename]
@@ -149,10 +144,10 @@ class Config:
         return Camera(**self._load_yaml(filename, category=DATA.CAMERA))
 
     def sensor(self, name: str):
-        if name not in self._config[DATA.PROFILE][PROFILE.QE]:
-            raise ValueError('Sensor "%s" not found.' % name)
-        filename = self._config[DATA.PROFILE][PROFILE.QE][name]
-        return QE(self.path(filename, DATA.PROFILE, PROFILE.QE))
+        if name not in self._config[DATA.QE]:
+            raise ValueError('QE "%s" not found.' % name)
+        filename = self._config[DATA.QE][name]
+        return QE(self.path(filename, DATA.QE))
 
     def telescope(self, name: str):
         if name not in self._config[DATA.TELESCOPE]:
