@@ -207,10 +207,9 @@ class Simulation:
 
         # peak
         #self.peak = np.floor((es / (2. * math.pi * sig2) + (n_sky + n_dark) / px_aper) / gain + bias)
-        A = es / (2. * math.pi * sig2)
-        self.peak = np.floor((A + n_dark / self.eff_pixels) / gain + bias)
+        self.peak = np.floor((es / (2. * math.pi * sig2) + n_dark / self.eff_pixels) / gain + bias)
         scale = scipy.special.erf(1/np.sqrt(8))**2
-        self.integrated_peak = np.floor((A * scale + n_dark / self.eff_pixels) / gain + bias)
+        self.integrated_peak = np.floor((es * scale / sig2 + n_dark / self.eff_pixels) / gain + bias)
         print(sky.seeing, self.peak, self.integrated_peak)
 
     def solid_angle_of_aperture(self, aper_radius: u.arcsec, seeing: Angle):
