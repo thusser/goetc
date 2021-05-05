@@ -3,7 +3,7 @@ import itertools
 import os
 import shutil
 from enum import Enum
-from typing import List
+from typing import List, Type
 import re
 import pandas as pd
 import yaml
@@ -16,9 +16,13 @@ from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 class DATA(Enum):
     TELESCOPE = 'telescope'
     CAMERA = 'camera'
-    SENSOR = 'sensor'
+    TRANSMISSION = 'transmission'
     BANDPASS = 'bandpass'
     SPECTRUM = 'spectrum'
+
+
+class TRANSMISSION(Enum):
+    SENSOR = 'sensor'
     
 
 def snake(text: str):
@@ -60,7 +64,7 @@ class Config:
         # find all cameras, bandpasses, etc
         self._config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
         self._config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
-        self._config[DATA.SENSOR] = self._list_csv(DATA.SENSOR)
+        self._config[DATA.TRANSMISSION] = self._list_csv(DATA.TRANSMISSION, recursive=True)
         self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
@@ -78,7 +82,7 @@ class Config:
     def _list_csv(self, category: DATA, group: str = None, recursive: bool = False):
         if recursive:
             groups = next(os.walk(self._data_path(category=category)))[1]
-            return {desnake(group): self._list_csv(category, group) for group in groups}
+            return {group: self._list_csv(category, group) for group in groups}
         else:
             data = pd.read_csv(self._data_path('index.csv', category, group), index_col=False)
             return {row['name']: row['filename'] for _, row in data.iterrows()}
@@ -101,7 +105,7 @@ class Config:
             if group is not None:
                 if group not in self._config[category]:
                     raise ValueError('Group group not found.')
-                parts += [snake(group)]
+                parts += [group]
 
         # build it
         parts += [filename]
@@ -132,7 +136,7 @@ class Config:
     def group_path(self, category: str, group: str = None, filename: str = None):
         path = os.path.join(self._path, category)
         if group is not None:
-            path = os.path.join(path, snake(group))
+            path = os.path.join(path, group)
         return path if filename is None else os.path.join(path, filename)
 
     def camera(self, name: str):
@@ -142,10 +146,10 @@ class Config:
         return Camera(**self._load_yaml(filename, category=DATA.CAMERA))
 
     def sensor(self, name: str):
-        if name not in self._config[DATA.SENSOR]:
+        if name not in self._config[DATA.TRANSMISSION][TRANSMISSION.SENSOR.value]:
             raise ValueError('Sensor "%s" not found.' % name)
-        filename = self._config[DATA.SENSOR][name]
-        return QE(self.path(filename, DATA.SENSOR))
+        filename = self._config[DATA.TRANSMISSION][TRANSMISSION.SENSOR.value][name]
+        return QE(self.path(filename, DATA.TRANSMISSION, TRANSMISSION.SENSOR.value))
 
     def telescope(self, name: str):
         if name not in self._config[DATA.TELESCOPE]:
