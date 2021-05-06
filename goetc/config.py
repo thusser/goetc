@@ -162,6 +162,9 @@ class Config:
     def spectrum(self, name: str):
         return Spectrum(self.path(self._config[DATA.SPECTRUM][name], category=DATA.SPECTRUM))
 
+    def vega_spectrum(self):
+        return Spectrum(CONFIG.path('alpha_lyr_stis_010.csv'))
+
 
 CONFIG = Config()
 

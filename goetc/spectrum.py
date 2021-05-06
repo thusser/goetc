@@ -81,7 +81,7 @@ class Bandpass:
 
         # load vega
         from .config import CONFIG
-        self._vega = XYData(CONFIG.path('alpha_lyr_stis_010.csv'))
+        self._vega = CONFIG.vega_spectrum()
         #self._vega = XYData(CONFIG.path('vega.csv'))
         self._vega_filter = self.data.resample(self._vega).norm_area()
 

@@ -5,9 +5,6 @@ import astropy.units as u
 import numpy as np
 import scipy
 from astropy import constants as const
-import yaml
-import inspect
-
 from astropy.coordinates import Angle
 from astropy.units import Unit, UnitBase, Quantity
 
@@ -102,41 +99,38 @@ class Camera:
             return self.gain
 
 
-class Source:
-    def __init__(self, magnitude: float):
-        self.magnitude = c(magnitude, u.mag)
-
-    def flux(self, bandpass: Bandpass):
-        return mag2flux(self.magnitude, bandpass.flux0) / bandpass.bandwidth
-
-
-class ExtendedSource(Source):
-    def __init__(self, extent: float, magnitude: float):
-        Source.__init__(self, magnitude)
-        self.extent = c(extent, u.arcsec)
-
-    def flux(self, bandpass: Bandpass):
-        sqrarcs = (1. * u.arcsec).to(u.radian)**2
-        return Source.flux(self, bandpass) / sqrarcs
-
-
-class Sky(ExtendedSource):
+class Sky:
     def __init__(self, magnitude: float = 22.0, seeing: float = 1.0, airmass: float = 2.0,
                  extinction: float = 0.2):
         """
 
         Args:
+            magnitude: Magnitude of sky in same filter as simulation.
             seeing: Seeing in arcsec.
             flux: Flux in W/m^2/m/steradian
             airmass: Airmass
             extinction: Extinction
         """
-        ExtendedSource.__init__(self, 0, magnitude)
 
         # store
+        self.magnitude = magnitude
         self.seeing = Angle(c(seeing, u.arcsec))
         self.airmass = airmass
         self.extinction = c(extinction, u.mag)
+
+    def flux(self, bandpass: Bandpass):
+        from .config import CONFIG
+
+        # calculate area of 1 arcsec square
+        sqrarcs = (1. * u.arcsec).to(u.radian) ** 2
+
+        # get vega spectrum and integrate over bandpass
+        vega = CONFIG.vega_spectrum()
+        flux = bandpass.integrate(vega)
+        print(flux)
+
+        # scale by
+
 
 
 class Simulation:
@@ -164,6 +158,8 @@ class Simulation:
         self.peak = 0
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
+        from goetc.config import CONFIG
+
         # gain and bias
         gain = self.camera.gain_binning(binning)
         bias = self.camera.bias_binning(binning)
@@ -171,15 +167,14 @@ class Simulation:
         # apply QE and filter to target spectrum
         target = self.filter.apply(self.camera.qe.apply(target))
 
+        # same for sky, but we just get the flux of vega, scaled to sky brightness and to 1 arcsec^2
+        vega = CONFIG.vega_spectrum().norm_to_mag(self.filter, sky.magnitude)
+        sky_spec = self.filter.apply(self.camera.qe.apply(vega))
+        sky_spec.data.y *= self.solid_angle_of_aperture(aper_radius) / (1. * u.arcsec).to(u.radian)**2
+
         # extinction
         extinct = mag2flux(sky.extinction * sky.airmass)
         target.data.y *= extinct
-
-        # sky flux
-        #sflux = sky.flux(self.filter) * self.filter.bandwidth * self.solid_angle_of_aperture(aper_radius, sky.seeing)
-
-        # electrons from target
-        es = self.electrons(target, exp_time)
 
         # effective aperture and plate scale
         self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
@@ -191,28 +186,28 @@ class Simulation:
         rpix = aper_radius / self.plate_scale
         fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
 
+        # target in electrons
+        target_es = self.electrons(target, exp_time) * fract
+
         # calculate different e- contributions
-        n_target = es * fract
-        #n_sky = self.electrons(sflux, exp_time)
+        n_target = target_es
+        n_sky = self.electrons(sky_spec, exp_time)
         n_ron = self.eff_pixels * self.camera.readout_noise * gain
         n_dark = self.eff_pixels * binning**2 * self.camera.dark_current * gain * exp_time
 
         # calculate S/N by using dimensionless values
-        #self.snr = n_target.value / math.sqrt(n_target.value + n_sky.value + n_dark.value + n_ron.value**2)
-        self.snr = n_target.value / math.sqrt(n_target.value + n_dark.value + n_ron.value ** 2)
+        self.snr = n_target.value / math.sqrt(n_target.value + n_sky.value + n_dark.value + n_ron.value**2)
 
         self.target_counts = np.floor(n_target / gain)
-        #self.sky_counts = np.floor(n_sky / gain)
+        self.sky_counts = np.floor(n_sky / gain)
         self.ron_counts = np.floor(n_ron / gain)
         self.dark_counts = np.floor(n_dark / gain)
 
         # peak
-        #self.peak = np.floor((es / (2. * math.pi * sig2) + (n_sky + n_dark) / px_aper) / gain + bias)
-        #self.peak = np.floor((es / (2. * math.pi * sig2) + n_dark / self.eff_pixels) / gain + bias)
         scale = scipy.special.erf(1/np.sqrt(8*sig2))**2
-        self.peak = np.floor((es * scale + n_dark / self.eff_pixels) / gain + bias)
+        self.peak = np.floor((target_es * scale + (n_sky + n_dark) / self.eff_pixels) / gain + bias)
 
-    def solid_angle_of_aperture(self, aper_radius: u.arcsec, seeing: Angle):
+    def solid_angle_of_aperture(self, aper_radius: u.arcsec):
         return math.pi * aper_radius ** 2
 
     def electrons(self, spectrum, exp_time) -> u.electron:
@@ -237,4 +232,4 @@ class Simulation:
         return self.camera.pixel_size * binning * self.telescope.plate_scale
 
     def pixels_in_aperture(self, aper_radius: u.arcsec, seeing: Angle, binning: int = 1) -> int:
-        return int(np.floor(self.solid_angle_of_aperture(aper_radius, seeing) / self.arcsec_per_pixel(binning)**2))
+        return int(np.floor(self.solid_angle_of_aperture(aper_radius) / self.arcsec_per_pixel(binning)**2))
