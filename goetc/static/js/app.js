@@ -34,6 +34,14 @@ let app = new Vue({
             aper_radius: 4,
             exp_time: 5.0,
             binning: 1,
+        },
+        results: {
+            snr: null,
+            binning: null,
+            peak: null,
+            target: null,
+            dark: null,
+            sky: null
         }
     },
     watch: {
@@ -87,6 +95,13 @@ let app = new Vue({
                 sim: this.simulation,
                 target: this.target
             }).then(response => {
+                const r = response.data;
+                this.results.snr = r.snr;
+                this.results.binning = r.binning;
+                this.results.peak = r.peak;
+                this.results.target = r.target;
+                this.results.dark = r.dark;
+                this.results.sky = r.sky;
             });
             return false;
         }

@@ -42,7 +42,6 @@ def camera(name):
 def signal_to_noise():
     # get config
     cfg = request.get_json(silent=True)
-    print(cfg)
 
     # build objects
     telescope = Telescope(**cfg['telescope'])
@@ -61,7 +60,12 @@ def signal_to_noise():
     sim = Simulation(telescope, camera, bandpass)
     sim.signal_to_noise(sky, spectrum, exp_time, aper_radius, binning)
 
-    # print results
-    print('S/N:', sim.snr)
-    print('Peak count:', sim.peak)
-    return 'bla'
+    # return results
+    return {
+        'snr': sim.snr,
+        'gain': camera.gain_binning(binning).value,
+        'peak': sim.peak.value,
+        'target': sim.target_counts.value,
+        'dark': sim.dark_counts.value,
+        'sky': sim.sky_counts.value
+    }

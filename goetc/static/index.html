@@ -93,7 +93,7 @@
         <div class="col-2"><label>Aperture:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="telescope.aperture">
+                <input type="number" class="form-control" v-model="telescope.aperture">
                 <span class="input-group-text">m</span>
             </div>
         </div>
@@ -103,7 +103,7 @@
         <div class="col-2"><label>Focal length:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="telescope.focal_length">
+                <input type="number" class="form-control" v-model="telescope.focal_length">
                 <span class="input-group-text">mm</span>
             </div>
         </div>
@@ -112,14 +112,14 @@
         <div class="col-5">&nbsp;</div>
         <div class="col-2"><label>Reflectivity:</label></div>
         <div class="col-5">
-            <input type="text" class="form-control" v-model="telescope.reflectivity">
+            <input type="number" class="form-control" v-model="telescope.reflectivity">
         </div>
     </div>
     <div class="row">
         <div class="col-5">&nbsp;</div>
         <div class="col-2"><label>Obscuration:</label></div>
         <div class="col-5">
-            <input type="text" class="form-control" v-model="telescope.obscuration">
+            <input type="number" class="form-control" v-model="telescope.obscuration">
         </div>
     </div>
 
@@ -136,7 +136,7 @@
         <div class="col-2"><label>Pixel size:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="camera.pixel_size">
+                <input type="number" class="form-control" v-model="camera.pixel_size">
                 <span class="input-group-text">micron (unbinned)</span>
             </div>
         </div>
@@ -155,7 +155,7 @@
         <div class="col-2"><label>RON:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="camera.readout_noise">
+                <input type="number" class="form-control" v-model="camera.readout_noise">
                 <span class="input-group-text">ADU</span>
             </div>
         </div>
@@ -165,7 +165,7 @@
         <div class="col-2"><label>Dark:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="camera.dark_current">
+                <input type="number" class="form-control" v-model="camera.dark_current">
                 <span class="input-group-text">ADU/px/s</span>
             </div>
         </div>
@@ -175,7 +175,7 @@
         <div class="col-2"><label>Gain:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="camera.gain">
+                <input type="number" class="form-control" v-model="camera.gain">
                 <span class="input-group-text">e-/ADU</span>
             </div>
         </div>
@@ -185,7 +185,7 @@
         <div class="col-2"><label>Bias:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="camera.bias">
+                <input type="number" class="form-control" v-model="camera.bias">
                 <span class="input-group-text">ADU</span>
             </div>
         </div>
@@ -216,7 +216,7 @@
         <div class="col-2"><label>Aperture:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="simulation.aper_radius">
+                <input type="number" class="form-control" v-model="simulation.aper_radius">
                 <span class="input-group-text">arcsec</span>
             </div>
         </div>
@@ -226,7 +226,7 @@
         <div class="col-2"><label>Exp. time:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control" v-model="simulation.exp_time">
+                <input type="number" class="form-control" v-model="simulation.exp_time">
                 <span class="input-group-text">sec</span>
             </div>
         </div>
@@ -242,12 +242,55 @@
 
     <div class="row">
         <div class="col-5">Results:</div>
-        <div class="col-2"><label>Total target:</label></div>
+        <div class="col-2"><label>S/N:</label></div>
+        <div class="col-5">
+            <input type="text" class="form-control" :value="results.snr" readonly>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">&nbsp;</div>
+        <div class="col-2"><label>Peak:</label></div>
         <div class="col-5">
             <div class="input-group">
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" :value="results.peak" readonly>
                 <span class="input-group-text">ADU</span>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" readonly>
+                <span class="input-group-text">e-</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">&nbsp;</div>
+        <div class="col-2"><label>Target:</label></div>
+        <div class="col-5">
+            <div class="input-group">
+                <input type="text" class="form-control" :value="results.target" readonly>
+                <span class="input-group-text">ADU</span>
+                <input type="text" class="form-control" readonly>
+                <span class="input-group-text">e-</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">&nbsp;</div>
+        <div class="col-2"><label>Dark:</label></div>
+        <div class="col-5">
+            <div class="input-group">
+                <input type="text" class="form-control" :value="results.dark" readonly>
+                <span class="input-group-text">ADU</span>
+                <input type="text" class="form-control" readonly>
+                <span class="input-group-text">e-</span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5">&nbsp;</div>
+        <div class="col-2"><label>Sky:</label></div>
+        <div class="col-5">
+            <div class="input-group">
+                <input type="text" class="form-control" :value="results.sky" readonly>
+                <span class="input-group-text">ADU</span>
+                <input type="text" class="form-control" readonly>
                 <span class="input-group-text">e-</span>
             </div>
         </div>
