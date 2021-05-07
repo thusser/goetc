@@ -1,6 +1,9 @@
-from flask import Flask, render_template
+from astropy.coordinates import Angle
+import astropy.units as u
+from flask import Flask, request
 
 from goetc.config import CONFIG, DATA
+from goetc.simulation import Telescope, Camera, Sky, Simulation
 
 app = Flask(__name__)
 
@@ -33,3 +36,32 @@ def telescope(name):
 @app.route('/camera/<string:name>')
 def camera(name):
     return CONFIG.camera_config(name)
+
+
+@app.route('/snr', methods=['POST'])
+def signal_to_noise():
+    # get config
+    cfg = request.get_json(silent=True)
+    print(cfg)
+
+    # build objects
+    telescope = Telescope(**cfg['telescope'])
+    camera = Camera(**cfg['camera'])
+    bandpass = CONFIG.bandpass(cfg['sim']['bandpass'])
+    sky = Sky(**cfg['sky'])
+    spec_bandpass = CONFIG.bandpass(cfg['target']['bandpass'])
+    spectrum = CONFIG.spectrum(cfg['target']['template']).norm_to_mag(spec_bandpass, cfg['target']['magnitude'])
+
+    # define parameters
+    binning = cfg['sim']['binning']
+    aper_radius = Angle(cfg['sim']['aper_radius'] * u.arcsec)
+    exp_time = 5. * u.second
+
+    # run sim
+    sim = Simulation(telescope, camera, bandpass)
+    sim.signal_to_noise(sky, spectrum, exp_time, aper_radius, binning)
+
+    # print results
+    print('S/N:', sim.snr)
+    print('Peak count:', sim.peak)
+    return 'bla'
