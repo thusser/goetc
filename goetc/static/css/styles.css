@@ -1,0 +1,10 @@
+@media (min-width: 1200px) {
+    .container{
+        max-width: 870px;
+    }
+}
+
+.container {
+    margin-top: 3em;
+    margin-bottom: 3em;
+}

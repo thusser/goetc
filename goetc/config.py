@@ -33,7 +33,7 @@ def desnake(text: str):
 class Config:
     def __init__(self):
         self._path: str = ''
-        self._config = {}
+        self.config = {}
 
     def init(self, copy: bool = False):
         # path to data
@@ -59,12 +59,12 @@ class Config:
             self._path = data_path
 
         # find all cameras, bandpasses, etc
-        self._config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
-        self._config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
-        self._config[DATA.QE] = self._list_csv(DATA.QE)
-        self._config[DATA.OPTICS] = self._list_csv(DATA.OPTICS)
-        self._config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
-        self._config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
+        self.config[DATA.CAMERA] = self._list_yaml(DATA.CAMERA)
+        self.config[DATA.BANDPASS] = self._list_csv(DATA.BANDPASS, recursive=True)
+        self.config[DATA.QE] = self._list_csv(DATA.QE)
+        self.config[DATA.OPTICS] = self._list_csv(DATA.OPTICS)
+        self.config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
+        self.config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
 
     def _list_yaml(self, category: DATA, group: str = None):
         filenames = [os.path.basename(f) for f in glob.glob(self._data_path('*.yaml', category=category))]
@@ -95,13 +95,13 @@ class Config:
 
         # got a category?
         if category is not None:
-            if category not in self._config:
+            if category not in self.config:
                 raise ValueError('Category not found.')
             parts += [category.value]
 
             # got a group?
             if group is not None:
-                if group not in self._config[category]:
+                if group not in self.config[category]:
                     raise ValueError('Group group not found.')
                 parts += [group]
 
@@ -110,8 +110,8 @@ class Config:
         return os.path.join(*parts)
 
     def groups(self, category: str):
-        if isinstance(self._config[category], dict):
-            return list(self._config[category].keys())
+        if isinstance(self.config[category], dict):
+            return list(self.config[category].keys())
         else:
             raise ValueError
 
@@ -121,7 +121,7 @@ class Config:
 
     def group_entries(self, category: str, group: str = None):
         # get data
-        data = self._config[category] if group is None else self._config[category][group]
+        data = self.config[category] if group is None else self.config[category][group]
 
         # what type?
         if isinstance(data, dict):
@@ -137,30 +137,36 @@ class Config:
             path = os.path.join(path, group)
         return path if filename is None else os.path.join(path, filename)
 
-    def camera(self, name: str):
-        if name not in self._config[DATA.CAMERA]:
+    def camera_config(self, name: str):
+        if name not in self.config[DATA.CAMERA]:
             raise ValueError('Camera "%s" not found.' % name)
-        filename = self._config[DATA.CAMERA][name]
-        return Camera(**self._load_yaml(filename, category=DATA.CAMERA))
+        filename = self.config[DATA.CAMERA][name]
+        return self._load_yaml(filename, category=DATA.CAMERA)
+
+    def camera(self, name: str):
+        return Camera(**self.camera_config(name))
 
     def sensor(self, name: str):
-        if name not in self._config[DATA.QE]:
+        if name not in self.config[DATA.QE]:
             raise ValueError('QE "%s" not found.' % name)
-        filename = self._config[DATA.QE][name]
+        filename = self.config[DATA.QE][name]
         return QE(self.path(filename, DATA.QE))
 
-    def telescope(self, name: str):
-        if name not in self._config[DATA.TELESCOPE]:
+    def telescope_config(self, name: str):
+        if name not in self.config[DATA.TELESCOPE]:
             raise ValueError('Telescope "%s" not found.' % name)
-        filename = self._config[DATA.TELESCOPE][name]
-        return Telescope(**self._load_yaml(filename, category=DATA.TELESCOPE))
+        filename = self.config[DATA.TELESCOPE][name]
+        return self._load_yaml(filename, category=DATA.TELESCOPE)
+
+    def telescope(self, name: str):
+        return Telescope(**self.telescope_config(name))
 
     def bandpass(self, name: str):
         group, bandpass = name.split('/')
-        return Bandpass(self.path(self._config[DATA.BANDPASS][group][bandpass], category=DATA.BANDPASS, group=group))
+        return Bandpass(self.path(self.config[DATA.BANDPASS][group][bandpass], category=DATA.BANDPASS, group=group))
 
     def spectrum(self, name: str):
-        return Spectrum(self.path(self._config[DATA.SPECTRUM][name], category=DATA.SPECTRUM))
+        return Spectrum(self.path(self.config[DATA.SPECTRUM][name], category=DATA.SPECTRUM))
 
     def vega_spectrum(self):
         return Spectrum(CONFIG.path('alpha_lyr_stis_010.csv'))
