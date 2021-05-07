@@ -155,6 +155,7 @@ class Simulation:
         self.eff_pixels = 0
         self.plate_scale = 0
         self.snr = 0
+        self.mag_accuracy = 0
         self.peak = 0
 
     def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
@@ -198,6 +199,11 @@ class Simulation:
         # calculate S/N by using dimensionless values
         self.snr = n_target.value / math.sqrt(n_target.value + n_sky.value + n_dark.value + n_ron.value**2)
 
+        # mag accuracy is 2.5 log ( 1 + N/S), see:
+        # https://www.eso.org/~ohainaut/ccd/sn.html
+        self.mag_accuracy = 2.5 * np.log10(1. + 1. / self.snr)
+
+        # count rates
         self.target_counts = np.floor(n_target / gain)
         self.sky_counts = np.floor(n_sky / gain)
         self.ron_counts = np.floor(n_ron / gain)

@@ -71,6 +71,11 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
         sim = Simulation(self.telescope, self.camera, self.bandpass())
         sim.signal_to_noise(self.sky, self.spectrum, exp_time*u.second, Angle(aper_radius*u.arcsec), self.binning)
 
+        # results
+        self.spinSNR.setValue(sim.snr)
+        self.lineSNR.setText(f'{sim.snr:.2f}')
+        self.lineMagAcc.setText(f'{sim.mag_accuracy*1000.:.2f} mmag')
+
         # misc
         self.lineEffPixel.setText(f'{sim.eff_pixels*u.pix:.0f}')
         self.linePlateScale.setText(f'{sim.plate_scale/u.pix:.2f}')
