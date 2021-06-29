@@ -1,0 +1,5 @@
+name: LSST
+aperture: 8.4
+focal_length: 10080
+reflectivity: 65
+obscuration: 35
