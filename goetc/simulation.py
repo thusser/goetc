@@ -19,6 +19,10 @@ def mag2flux(mag: u.mag, flux0=1.):
     return flux0 * 10.**(-0.4 * mag.value)
 
 
+def flux2mag(flux: float, flux0=1.):
+    return -2.5*np.log10(flux/flux0)*u.mag
+
+
 def c(value, unit, float_unit=None):
     # if no float type is given, it's the same as unit
     if float_unit is None:
@@ -153,13 +157,20 @@ class Simulation:
         self.dark_counts = 0
         self.ron_counts = 0
         self.eff_pixels = 0
-        self.plate_scale = 0
-        self.snr = 0
-        self.mag_accuracy = 0
+        self.plate_scale = 0.
+        self.mag_accuracy = 0.
         self.peak = 0
 
-    def signal_to_noise(self, sky: Sky, target: Spectrum, exp_time: float, aper_radius: Angle, binning: int):
+        # observation defined from 2 of the following 3 quantities
+        self.snr = 0.
+        self.exp_time = 0.
+        self.magnitude = 0.
+
+    def get_signal_to_noise(self, exp_time: float, target: Spectrum, sky: Sky, aper_radius: Angle, binning: int):
         from goetc.config import CONFIG
+
+        # target brightness in filter (before QE, extinction)
+        magn = self.filter.mag(target)*u.mag
 
         # gain and bias
         gain = self.camera.gain_binning(binning)
@@ -198,6 +209,170 @@ class Simulation:
 
         # calculate S/N by using dimensionless values
         self.snr = n_target.value / math.sqrt(n_target.value + n_sky.value + n_dark.value + n_ron.value**2)
+        self.exp_time = exp_time
+        self.magnitude = magn
+
+        # mag accuracy is 2.5 log ( 1 + N/S), see:
+        # https://www.eso.org/~ohainaut/ccd/sn.html
+        self.mag_accuracy = 2.5 * np.log10(1. + 1. / self.snr)
+
+        # count rates
+        self.target_counts = np.floor(n_target / gain)
+        self.sky_counts = np.floor(n_sky / gain)
+        self.ron_counts = np.floor(n_ron / gain)
+        self.dark_counts = np.floor(n_dark / gain)
+
+        # peak
+        scale = scipy.special.erf(1/np.sqrt(8*sig2))**2
+        self.peak = np.floor((target_es * scale + (n_sky + n_dark) / self.eff_pixels) / gain + bias)
+
+    def get_exposure_time(self, snr: float, target: Spectrum, sky: Sky, aper_radius: Angle, binning: int):
+        """
+        Same as get_signal_to_noise() but calculates exposure time from a given S/N using
+        an exposure time factor "ft" given the target, dark, and sky values for 1sec:
+
+            snr = target*ft / sqrt (target*ft + dark*ft + sky*ft + ron**2)
+            target*ft + dark*ft + sky*ft + ron**2 = target**2 * ft**2 / snr**2
+            ft**2 (target**2 / snr**2) + ft (-target-dark-sky) + (-ron**2) = 0
+        """
+        from goetc.config import CONFIG
+
+        # target brightness in filter (before QE, extinction)
+        magn = self.filter.mag(target)*u.mag
+
+        # gain and bias
+        gain = self.camera.gain_binning(binning)
+        bias = self.camera.bias_binning(binning)
+
+        # apply QE and filter to target spectrum
+        target = self.filter.apply(self.camera.qe.apply(target))
+
+        # same for sky, but we just get the flux of vega, scaled to sky brightness and to 1 arcsec^2
+        vega = CONFIG.vega_spectrum().norm_to_mag(self.filter, sky.magnitude)
+        sky_spec = self.filter.apply(self.camera.qe.apply(vega))
+        sky_spec.data.y *= self.solid_angle_of_aperture(aper_radius) / (1. * u.arcsec).to(u.radian)**2
+
+        # extinction
+        extinct = mag2flux(sky.extinction * sky.airmass)
+        target.data.y *= extinct
+
+        # effective aperture and plate scale
+        self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
+        self.plate_scale = self.arcsec_per_pixel(binning)
+
+        # calculate fraction of total in aperture
+        fwhm = sky.seeing / self.plate_scale
+        sig2 = fwhm**2 / (8. * math.log(2))
+        rpix = aper_radius / self.plate_scale
+        fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
+
+        # unit exposure time
+        t0 = 1.*u.s
+
+        # target in electrons for 1sec exposure
+        target_es = self.electrons(target, t0) * fract
+
+        # calculate different e- contributions for 1sec exposures
+        n_target = target_es
+        n_sky = self.electrons(sky_spec, t0)
+        n_ron = self.eff_pixels * self.camera.readout_noise * gain
+        n_dark = self.eff_pixels * binning**2 * self.camera.dark_current * gain * t0
+
+        # calculate exposure time from S/N using dimensionless values
+        a = n_target.value**2/snr**2
+        b = -n_target.value-n_sky.value-n_dark.value
+        c = -n_ron.value**2
+        discr = b**2-4*a*c
+        if discr < 0. : raise ValueError ('get_exptime() : no real roots')
+        root1 = 0.5*(-b+np.sqrt(discr))/a
+        root2 = 0.5*(-b-np.sqrt(discr))/a
+        ft = max(root1,root2)
+        if ft <= 0. : raise ValueError ('get_target_brightness() < 0')
+
+        # save results
+        self.exp_time = t0*ft
+        self.snr = snr
+        self.magnitude = magn
+
+        # mag accuracy is 2.5 log ( 1 + N/S), see:
+        # https://www.eso.org/~ohainaut/ccd/sn.html
+        self.mag_accuracy = 2.5 * np.log10(1. + 1. / self.snr)
+
+        # count rates
+        self.target_counts = np.floor(n_target*ft / gain)
+        self.sky_counts = np.floor(n_sky*ft / gain)
+        self.ron_counts = np.floor(n_ron*ft / gain)
+        self.dark_counts = np.floor(n_dark*ft / gain)
+
+        # peak
+        scale = scipy.special.erf(1/np.sqrt(8*sig2))**2
+        self.peak = np.floor(ft*(target_es * scale + (n_sky + n_dark) / self.eff_pixels) / gain + bias)
+
+    def get_magnitude (self, snr: float, exp_time: float, target: Spectrum, sky: Sky, aper_radius: Angle, binning: int):
+        """
+        Same as get_signal_to_noise() but calculates target brightness from a given S/N and
+        exposure time using a target brightness factor ft :
+
+            snr = target*ft / sqrt (target*ft + dark + sky + ron**2)
+            target*ft + dark + sky + ron**2 = target**2 * ft**2 / snr**2
+            ft**2 (target**2 / snr**2) + ft (-target) + (-dark-sky-ron**2) = 0
+        """
+        from goetc.config import CONFIG
+
+        # target brightness in filter (before QE, extinction)
+        magn = self.filter.mag(target)*u.mag
+
+        # gain and bias
+        gain = self.camera.gain_binning(binning)
+        bias = self.camera.bias_binning(binning)
+
+        # apply QE and filter to target spectrum
+        target = self.filter.apply(self.camera.qe.apply(target))
+
+        # same for sky, but we just get the flux of vega, scaled to sky brightness and to 1 arcsec^2
+        vega = CONFIG.vega_spectrum().norm_to_mag(self.filter, sky.magnitude)
+        sky_spec = self.filter.apply(self.camera.qe.apply(vega))
+        sky_spec.data.y *= self.solid_angle_of_aperture(aper_radius) / (1. * u.arcsec).to(u.radian)**2
+
+        # extinction
+        extinct = mag2flux(sky.extinction * sky.airmass)
+        target.data.y *= extinct
+
+        # effective aperture and plate scale
+        self.eff_pixels = self.pixels_in_aperture(aper_radius, sky.seeing, binning)
+        self.plate_scale = self.arcsec_per_pixel(binning)
+
+        # calculate fraction of total in aperture
+        fwhm = sky.seeing / self.plate_scale
+        sig2 = fwhm**2 / (8. * math.log(2))
+        rpix = aper_radius / self.plate_scale
+        fract = 1. - np.exp(-0.5 * rpix**2 / sig2)
+
+        # target in electrons
+        target_es = self.electrons(target, exp_time) * fract
+
+        # calculate different e- contributions
+        n_target = target_es
+        n_sky = self.electrons(sky_spec, exp_time)
+        n_ron = self.eff_pixels * self.camera.readout_noise * gain
+        n_dark = self.eff_pixels * binning**2 * self.camera.dark_current * gain * exp_time
+
+        # calculate flux by using dimensionless values
+        # ft**2 (target**2 / snr**2) + ft (-target) + (-dark-sky-ron**2) = 0
+        a = n_target.value**2/snr**2
+        b = -n_target.value
+        c = -n_sky.value-n_dark.value-n_ron.value**2
+        discr = b**2-4*a*c
+        if discr < 0. : raise ValueError ('get_target_brightness() : no real roots')
+        root1 = 0.5*(-b+np.sqrt(discr))/a
+        root2 = 0.5*(-b-np.sqrt(discr))/a
+        ft = max(root1,root2)
+        if ft <= 0. : raise ValueError ('get_target_brightness() < 0')
+
+        # save results
+        self.exp_time = exp_time
+        self.snr = snr
+        self.magnitude = magn+flux2mag(ft)
 
         # mag accuracy is 2.5 log ( 1 + N/S), see:
         # https://www.eso.org/~ohainaut/ccd/sn.html
