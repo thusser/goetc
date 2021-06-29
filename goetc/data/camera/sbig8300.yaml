@@ -1,0 +1,7 @@
+name: SBIG ST-8300 M
+pixel_size: 5.4 # microns/pix
+gain: [3.5] # e-/ADU
+readout_noise: 10 # e-/pix
+dark_current: 0.5 # e-/s/pix
+qe: KAF6303e
+bias: [900]
