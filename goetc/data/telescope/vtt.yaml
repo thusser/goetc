@@ -1,0 +1,5 @@
+name: Goettingen Vertical Vacuum Telescope
+aperture: 0.55
+focal_length: 25000
+reflectivity: 80
+obscuration: 10
