@@ -1,8 +1,8 @@
 name: FLI PL230
-pixel_size: 18.0
-gain: 1.85
-readout_noise: 13
-dark_current: 0.2
+pixel_size: 15.0 # microns/pix
+gain: 1.85 # e-/ADU
+readout_noise: 13 # e-/pix
+dark_current: 0.2 # e-/pix/s
 qe: E2V Broadband BI
 optics: [FLI Window F116]
 bias: [944, 1500, 2334]

@@ -1,7 +1,7 @@
 name: SBIG STL-6303e
-pixel_size: 9.0
-gain: [1.4, 2.3, 2.3]
-readout_noise: 13
-dark_current: 0.02
+pixel_size: 9.0 # microns/pix
+gain: [1.4, 2.3, 2.3] # e-/ADU
+readout_noise: 13 # e-/pix
+dark_current: 0.02 # e-/s/pix
 qe: KAF6303e
 bias: [1053, 675, 656]
