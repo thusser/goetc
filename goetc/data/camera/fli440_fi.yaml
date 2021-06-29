@@ -1,0 +1,8 @@
+name: FLI KL440 FI
+pixel_size: 11.0 # microns/pix
+gain: 1.5 # e-/ADU
+readout_noise: 1.5 # e-/pix
+dark_current: 0.015 # e-/pix/s
+qe: GSense 440 FI
+optics: [FLI Window F116]
+bias: [500]
