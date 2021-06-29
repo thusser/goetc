@@ -44,12 +44,17 @@ class Spectrum:
     def y(self):
         return self.data.y
 
-    def norm_to_mag(self, bandpass: Bandpass, mag: float) -> Spectrum:
-        # calculate mag
+    def norm_to_mag(self, bandpass: Bandpass, mag) -> Spectrum:
+        # calculate current mag
         cur_mag = bandpass.mag(self)
 
+        if isinstance (mag,u.Quantity) :
+            m = mag.value
+        else :
+            m = mag
+
         # normalize to given magnitude
-        return Spectrum(x=self.x, y=self.y * np.power(100., 0.2 * (cur_mag - mag)))
+        return Spectrum(x=self.x, y=self.y * np.power(100., 0.2 * (cur_mag - m)))
 
 
 class QE:
@@ -98,6 +103,7 @@ class Bandpass:
         return Spectrum(x=spec.x, y=spec.y * bp.y)
 
     def mag(self, spec: Spectrum) -> float:
+        """ Returns float, not a u.Quantity! """
         # resample filter
         fltr = self.data.resample(spec.data)
 
