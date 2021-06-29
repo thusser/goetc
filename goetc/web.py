@@ -58,7 +58,7 @@ def signal_to_noise():
 
     # run sim
     sim = Simulation(telescope, camera, bandpass)
-    sim.signal_to_noise(sky, spectrum, exp_time, aper_radius, binning)
+    sim.get_signal_to_noise(exp_time, spectrum, sky, aper_radius, binning)
 
     # return results
     return {

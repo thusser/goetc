@@ -69,7 +69,7 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
 
         # simulate
         sim = Simulation(self.telescope, self.camera, self.bandpass())
-        sim.signal_to_noise(self.sky, self.spectrum, exp_time*u.second, Angle(aper_radius*u.arcsec), self.binning)
+        sim.get_signal_to_noise(exp_time*u.second, self.spectrum, self.sky, Angle(aper_radius*u.arcsec), self.binning)
 
         # results
         self.spinSNR.setValue(sim.snr)
