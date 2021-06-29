@@ -1,0 +1,8 @@
+name: LSST camera
+pixel_size: 10.0 # microns/pix
+gain: 1.5 # e-/ADU
+readout_noise: 5.0 # e-/pix
+dark_current: 0.001 # e-/pix/s
+qe: E2V Broadband BI
+optics: [FLI Window F116]
+bias: [500]
