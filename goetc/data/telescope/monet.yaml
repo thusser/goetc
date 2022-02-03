@@ -2,4 +2,4 @@ name: MONET
 aperture: 1.2
 focal_length: 8400
 reflectivity: 71
-obscuration: 1
+obscuration: 10
