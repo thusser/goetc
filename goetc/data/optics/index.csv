@@ -1,2 +1,4 @@
 filename,name
 fli_window_f116.csv,FLI Window F116
+pco.edge_window_uv.csv,pco.edge Window UV+
+pco.edge_window_vis.csv,pco.edge Window VIS+

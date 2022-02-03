@@ -1,0 +1,8 @@
+name: pco.edge 4.2 bi
+pixel_size: 6.5
+gain: 0.8
+readout_noise: 1.8
+dark_current: 0.2
+qe: pco.edge 4.2 bi
+optics: ["pco.edge Window VIS+"]
+bias: 0
