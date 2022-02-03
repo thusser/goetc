@@ -75,15 +75,21 @@ class QE:
 
 class Bandpass:
     def __init__(self, filename: str = None):
-        # load filter
-        self.data = XYData(filename, y_unit=u.dimensionless_unscaled)
-        self.resampled_data = None
-
-        # load vega
         from .config import CONFIG
+
+        # init
+        self.data = None
+        self.resampled_data = None
         self._vega = CONFIG.vega_spectrum()
-        #self._vega = XYData(CONFIG.path('vega.csv'))
-        self._vega_filter = self.data.resample(self._vega).norm_area()
+        self._vega_filter = None
+
+        # got file?
+        if filename:
+            # load filter
+            self.data = XYData(filename, y_unit=u.dimensionless_unscaled)
+
+            # resample vega
+            self._vega_filter = self.data.resample(self._vega).norm_area()
 
     @property
     def x(self):
@@ -94,28 +100,46 @@ class Bandpass:
         return self.data.y
 
     def apply(self, spec: Spectrum) -> Spectrum:
-        bp = self.data.resample(spec.data)
-        return Spectrum(x=spec.x, y=spec.y * bp.y)
+        if self.data is None:
+            return spec
+        else:
+            bp = self.data.resample(spec.data)
+            return Spectrum(x=spec.x, y=spec.y * bp.y)
 
     def mag(self, spec: Spectrum) -> float:
-        # resample filter
-        fltr = self.data.resample(spec.data)
+        if self.data is None:
+            # no filter
+            # integrate
+            flux1 = trapz(spec.y, spec.x)
+            flux2 = trapz(self._vega.y, self._vega.x)
 
-        # multiply spectra with filter
-        filter_spec = spec.y * fltr.y
-        filter_vega = self._vega.y * self._vega_filter.y
+            # calculate Vega magnitude
+            return -2.5 * np.log10(flux1 / flux2)
 
-        # integrate
-        flux1 = trapz(filter_spec, spec.x) / trapz(fltr.y, fltr.x)
-        flux2 = trapz(filter_vega, self._vega.x) / trapz(self._vega_filter.y, self._vega_filter.x)
+        else:
+            # resample filter
+            fltr = self.data.resample(spec.data)
 
-        # calculate Vega magnitude
-        return -2.5 * np.log10(flux1 / flux2)
+            # multiply spectra with filter
+            filter_spec = spec.y * fltr.y
+            filter_vega = self._vega.y * self._vega_filter.y
+
+            # integrate
+            flux1 = trapz(filter_spec, spec.x) / trapz(fltr.y, fltr.x)
+            flux2 = trapz(filter_vega, self._vega.x) / trapz(self._vega_filter.y, self._vega_filter.x)
+
+            # calculate Vega magnitude
+            return -2.5 * np.log10(flux1 / flux2)
 
     def integrate(self, spec: Spectrum) -> float:
-        # resample filter
-        fltr = self.data.resample(spec.data)
+        if self.data is None:
+            # if no filter is given, just integrate spectrum
+            return trapz(spec.y, spec.x)
 
-        # apply filter and integrate
-        fs = spec.y * fltr.y
-        return trapz(fs, spec.x)
+        else:
+            # resample filter
+            fltr = self.data.resample(spec.data)
+
+            # apply filter and integrate
+            fs = spec.y * fltr.y
+            return trapz(fs, spec.x)
