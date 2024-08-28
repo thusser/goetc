@@ -62,7 +62,7 @@ class Telescope:
         self.obscuration = obscuration / 100.
 
     def effective_area(self):
-        return math.pi * self.aperture**2 * (1. - self.obscuration) * self.reflectivity
+        return math.pi * (self.aperture/2)**2 * (1. - self.obscuration) * self.reflectivity
 
 
 class Camera:
