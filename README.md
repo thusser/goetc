@@ -2,6 +2,8 @@
 
 Exposure time calculator for the IAG's telescope.
 
+Requires Python >= 3.11 (tested with 3.12).
+
 Download::
 
     git clone https://github.com/thusser/goetc.git
