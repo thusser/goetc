@@ -1,6 +1,6 @@
 [project]
 name = "goetc"
-version = "0.2.0"
+version = "0.2.1"
 description = "Exposure time calculator for the IAG's telescope"
 readme = "README.md"
 requires-python = ">=3.11"
