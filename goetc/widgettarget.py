@@ -1,10 +1,8 @@
-import itertools
-
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget
 
 from .qt.widgettarget_ui import Ui_WidgetTarget
-from .spectrum import XYData, Spectrum, Bandpass
+from .spectrum import Spectrum, Bandpass
 from .config import CONFIG, DATA
 
 

@@ -1,12 +1,8 @@
-import itertools
-
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QWidget
 
 from .qt.widgetsky_ui import Ui_WidgetSky
 from .simulation import Sky
-from .spectrum import XYData, Spectrum, Bandpass
-from .config import CONFIG, DATA
 
 
 class WidgetSky(QWidget, Ui_WidgetSky):
