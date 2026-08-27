@@ -193,7 +193,9 @@ class Simulation:
         # calculate different e- contributions
         n_target = target_es
         n_sky = self.electrons(sky_spec, exp_time)
-        n_ron = self.eff_pixels * self.camera.readout_noise * gain
+        # read noise is independent per pixel, so it adds in quadrature over
+        # the aperture (variance N*ron^2, not (N*ron)^2)
+        n_ron = math.sqrt(self.eff_pixels) * self.camera.readout_noise * gain
         n_dark = self.eff_pixels * binning**2 * self.camera.dark_current * gain * exp_time
 
         # calculate S/N by using dimensionless values
