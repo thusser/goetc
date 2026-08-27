@@ -1,8 +1,8 @@
 name: Build and push Docker image
 
+# Only build & push on release tags (v*); use workflow_dispatch for manual runs.
 on:
   push:
-    branches: [main]
     tags: ['v*']
   workflow_dispatch:
 
@@ -33,9 +33,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha
             type=ref,event=tag
+            type=sha
+            type=raw,value=latest
 
       - name: Build and push
         uses: docker/build-push-action@v6
