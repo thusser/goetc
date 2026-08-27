@@ -1,6 +1,6 @@
 [project]
 name = "goetc"
-version = "0.2.0"
+version = "0.2.1"
 description = "Exposure time calculator for the IAG's telescope"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,3 +22,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["goetc"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
