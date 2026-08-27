@@ -3,7 +3,6 @@ import numpy as np
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QSpacerItem, QSizePolicy, QScrollArea, QWidget
-from astropy.coordinates import Angle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
@@ -63,7 +62,7 @@ class MainWindow(QMainWindow):
 
         # stretcher
         self.settings_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        self.settings_layout.setStretch(4, 2.)
+        self.settings_layout.setStretch(4, 2)
 
         # plot
         self.figure = plt.Figure()

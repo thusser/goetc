@@ -1,0 +1,6 @@
+SDSS ugriz filter curves from the SDSS imager filter set:
+http://www.sdss.org/dr3/instruments/imager/
+
+Response functions include the atmosphere at airmass 1.3 (point-source
+column), as used to define the SDSS photometric system.
+Source data: /data2/spexxyDATA/filters/SDSS (SDSS DR3).

@@ -1,0 +1,24 @@
+[project]
+name = "goetc"
+version = "0.1.0"
+description = "Exposure time calculator for the IAG's telescope"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "PyQt5>=5.15.10",
+    "astropy>=6.0",
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+    "scipy>=1.11",
+    "Flask>=3.0",
+    "gunicorn>=21.2",
+    "pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["goetc"]

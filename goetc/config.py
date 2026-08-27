@@ -3,13 +3,14 @@ import itertools
 import os
 import shutil
 from enum import Enum
-from typing import List, Type
 import re
+import numpy as np
+import astropy.units as u
 import pandas as pd
 import yaml
 
 import goetc
-from goetc.simulation import Camera, Telescope
+from goetc.simulation import Camera, Sky, Telescope
 from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 
 
@@ -20,6 +21,7 @@ class DATA(Enum):
     OPTICS = 'optics'
     BANDPASS = 'bandpass'
     SPECTRUM = 'spectrum'
+    SKY = 'sky'
 
 
 def snake(text: str):
@@ -36,8 +38,8 @@ class Config:
         self.config = {}
 
     def init(self, copy: bool = False):
-        # path to data
-        data_path = os.path.join(os.path.abspath(os.path.dirname(goetc.__file__)), 'data')
+        # path to package data (fallback if no user config dir exists)
+        data_path = goetc.data_path()
 
         # get path for configuration
         if 'APPDATA' in os.environ:
@@ -65,6 +67,7 @@ class Config:
         self.config[DATA.OPTICS] = self._list_csv(DATA.OPTICS)
         self.config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self.config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
+        self.config[DATA.SKY] = self._list_yaml(DATA.SKY)
 
     def _list_yaml(self, category: DATA, group: str = None):
         filenames = [os.path.basename(f) for f in glob.glob(self._data_path('*.yaml', category=category))]
@@ -102,7 +105,7 @@ class Config:
             # got a group?
             if group is not None:
                 if group not in self.config[category]:
-                    raise ValueError('Group group not found.')
+                    raise ValueError('Group "%s" not found.' % group)
                 parts += [group]
 
         # build it
@@ -116,8 +119,8 @@ class Config:
             raise ValueError
 
     def recursive_groups(self, category: str):
-        groups = sorted(CONFIG.groups(category))
-        return list(itertools.chain(*[[f'{g}/{f}' for f in CONFIG.group_entries(category, g)] for g in groups]))
+        groups = sorted(self.groups(category))
+        return list(itertools.chain(*[[f'{g}/{f}' for f in self.group_entries(category, g)] for g in groups]))
 
     def group_entries(self, category: str, group: str = None):
         # get data
@@ -152,6 +155,22 @@ class Config:
         filename = self.config[DATA.QE][name]
         return QE(self.path(filename, DATA.QE))
 
+    def optics(self, name: str):
+        if name not in self.config[DATA.OPTICS]:
+            raise ValueError('Optics "%s" not found.' % name)
+        filename = self.config[DATA.OPTICS][name]
+        data = XYData(self.path(filename, DATA.OPTICS), y_unit=u.dimensionless_unscaled)
+
+        # vendor files are not always sorted in ascending wavelength
+        order = np.argsort(data.x)
+        data.x = data.x[order]
+        data.y = data.y[order]
+
+        # percent -> fraction
+        data.y /= 100.
+
+        return data
+
     def telescope_config(self, name: str):
         if name not in self.config[DATA.TELESCOPE]:
             raise ValueError('Telescope "%s" not found.' % name)
@@ -169,7 +188,16 @@ class Config:
         return Spectrum(self.path(self.config[DATA.SPECTRUM][name], category=DATA.SPECTRUM))
 
     def vega_spectrum(self):
-        return Spectrum(CONFIG.path('alpha_lyr_stis_010.csv'))
+        return Spectrum(self.path('alpha_lyr_stis_010.csv'))
+
+    def sky_config(self, name: str):
+        if name not in self.config[DATA.SKY]:
+            raise ValueError('Sky "%s" not found.' % name)
+        filename = self.config[DATA.SKY][name]
+        return self._load_yaml(filename, category=DATA.SKY)
+
+    def sky(self, name: str):
+        return Sky(**self.sky_config(name))
 
 
 CONFIG = Config()

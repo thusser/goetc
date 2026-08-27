@@ -8,6 +8,7 @@ let app = new Vue({
             bandpass: 'Bessel/V'
         },
         sky: {
+            name: null,
             magnitude: 22.0,
             seeing: 1.0,
             airmass: 2.0,
@@ -37,11 +38,14 @@ let app = new Vue({
         },
         results: {
             snr: null,
-            binning: null,
             peak: null,
             target: null,
             dark: null,
-            sky: null
+            sky: null,
+            peak_e: null,
+            target_e: null,
+            dark_e: null,
+            sky_e: null
         }
     },
     watch: {
@@ -53,6 +57,12 @@ let app = new Vue({
         'camera.name': function (new_cam, old_cam) {
             axios.get('/camera/' + new_cam).then(response => {
                 this.set_camera(response.data, this.simulation.binning);
+            });
+        },
+        'sky.name': function (new_sky, old_sky) {
+            if (!new_sky) return;
+            axios.get('/sky/' + new_sky).then(response => {
+                this.set_sky(response.data);
             });
         },
         'simulation.binning': function (new_bin, old_bin) {
@@ -82,10 +92,15 @@ let app = new Vue({
             this.camera.pixel_size = camera.pixel_size;
             this.camera.readout_noise = camera.readout_noise;
             this.camera.dark_current = camera.dark_current;
-            console.log(binning);
             this.camera.gain = Array.isArray(camera.gain) ? camera.gain[binning - 1] : camera.gain;
             this.camera.bias = Array.isArray(camera.bias) ? camera.bias[binning - 1] : camera.bias;
             this.camera.qe = camera.qe;
+        },
+        set_sky(sky) {
+            this.sky.magnitude = sky.magnitude;
+            this.sky.seeing = sky.seeing;
+            this.sky.airmass = sky.airmass;
+            this.sky.extinction = sky.extinction;
         },
         signal_to_noise() {
             axios.post('/snr', {
@@ -97,11 +112,15 @@ let app = new Vue({
             }).then(response => {
                 const r = response.data;
                 this.results.snr = r.snr;
-                this.results.binning = r.binning;
                 this.results.peak = r.peak;
                 this.results.target = r.target;
                 this.results.dark = r.dark;
                 this.results.sky = r.sky;
+                // electron equivalents of the ADU counts
+                this.results.peak_e = r.peak * r.gain;
+                this.results.target_e = r.target * r.gain;
+                this.results.dark_e = r.dark * r.gain;
+                this.results.sky_e = r.sky * r.gain;
             });
             return false;
         }

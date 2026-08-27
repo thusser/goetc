@@ -17,6 +17,9 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
         # currently updating values?
         self.updating = True
 
+        # optics of the currently selected preset (no optics for custom cameras)
+        self.optics = None
+
         # details checker
         self.widgetDetails.setVisible(False)
         self.checkDetails.stateChanged.connect(self.widgetDetails.setVisible)
@@ -41,19 +44,21 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
 
         # does camera exist?
         if preset not in CONFIG.groups(DATA.CAMERA):
+            self.optics = None  # custom camera
             return
 
         # fill it
         self.updating = True
         camera = CONFIG.camera(preset)
+        self.optics = camera.optics
         self.spinPixelSize.setValue(camera.pixel_size.to(u.micron).value)
         self.spinRON.setValue(camera.readout_noise.value)
         self.spinDark.setValue(camera.dark_current.value)
         self.spinGain.setValue(camera.gain_binning(binning).value)
         self.spinBias.setValue(camera.bias_binning(binning).value)
-        if isinstance(camera.qe, float):
+        if camera.qe_name is None:
             self.comboQEType.setCurrentIndex(0)
-            self.spinQE.setValue(camera.qe)
+            self.spinQE.setValue(float(camera.qe.y.mean()) * 100.)
         else:
             self.comboQEType.setCurrentIndex(1)
             self.comboSensor.setCurrentText(camera.qe_name)
@@ -65,7 +70,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
     @pyqtSlot(float, name='on_spinPixelSize_valueChanged')
     @pyqtSlot(float, name='on_spinRON_valueChanged')
     @pyqtSlot(float, name='on_spinDark_valueChanged')
-    @pyqtSlot(float, name='on__valueChanged')
+    @pyqtSlot(float, name='on_spinQE_valueChanged')
     @pyqtSlot(float, name='on_spinGain_valueChanged')
     @pyqtSlot(float, name='on_spinBias_valueChanged')
     def value_changed(self):
@@ -78,7 +83,7 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
 
     def camera(self) -> Camera:
         if self.comboQEType.currentIndex() == 0:
-            qe = self.spinCameraQE.value()
+            qe = self.spinQE.value() / 100.
         else:
             qe = CONFIG.sensor(self.comboSensor.currentText())
 
@@ -88,7 +93,8 @@ class WidgetCamera(QWidget, Ui_WidgetCamera):
                       readout_noise=self.spinRON.value(),
                       dark_current=self.spinDark.value(),
                       bias=self.spinBias.value(),
-                      qe=qe)
+                      qe=qe,
+                      optics=self.optics)
 
     def binning(self):
         return self.spinBinning.value()

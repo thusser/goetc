@@ -2,6 +2,8 @@
 .gitignore
 .idea
 venv
+.venv
+.uv-cache
 __pycache__
 *.pyc
 *.pyo
