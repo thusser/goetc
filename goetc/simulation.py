@@ -8,7 +8,7 @@ from astropy import constants as const
 from astropy.coordinates import Angle
 from astropy.units import Unit, UnitBase, Quantity
 
-from goetc.spectrum import XYData, Bandpass, Spectrum
+from goetc.spectrum import XYData, Bandpass, Spectrum, trapz
 
 
 def data_path():
@@ -231,7 +231,7 @@ class Simulation:
         n = spectrum.y * exp_time * self.telescope.effective_area() / (const.h * const.c / spectrum.x)
 
         # integrate over wavelength
-        electrons = np.trapz(n, spectrum.x).to(u.dimensionless_unscaled)
+        electrons = trapz(n, spectrum.x).to(u.dimensionless_unscaled)
 
         # unit is e-
         return electrons * u.electron

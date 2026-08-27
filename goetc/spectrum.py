@@ -2,9 +2,14 @@ from __future__ import annotations
 import os
 import numpy as np
 import pandas as pd
-from numpy import trapz
 import astropy.units as u
 from scipy.interpolate import interp1d
+
+# numpy >= 2.0 renamed trapz to trapezoid; keep working on both.
+try:
+    from numpy import trapezoid as trapz
+except ImportError:  # pragma: no cover - numpy < 2.0
+    from numpy import trapz
 
 
 class XYData:
