@@ -1,0 +1,12 @@
+Typical sky conditions (V-band sky brightness in mag/arcsec^2, seeing in
+arcsec, extinction in mag/airmass) used as starting points for the ETC:
+
+- Göttingen (urban): sky brightness ~19.0, seeing ~2.0", extinction ~0.25
+- Sutherland, SAAO (dark site, 1760 m): sky brightness ~21.8, seeing
+  ~1.2", extinction ~0.10
+- McDonald Observatory, Mt Locke (dark site, 2070 m): sky brightness
+  ~21.7, seeing ~1.8", extinction ~0.15
+
+The sky magnitude is given in V; when simulating in another filter,
+adjust it accordingly. Airmass is set to a typical observing value and
+should be adapted to the actual observation.

@@ -42,7 +42,8 @@ def config():
         'telescopes': CONFIG.groups(DATA.TELESCOPE),
         'cameras': CONFIG.groups(DATA.CAMERA),
         'qes': CONFIG.groups(DATA.QE),
-        'templates': CONFIG.groups(DATA.SPECTRUM)
+        'templates': CONFIG.groups(DATA.SPECTRUM),
+        'skies': CONFIG.groups(DATA.SKY)
     }
 
 
@@ -54,6 +55,11 @@ def telescope(name):
 @app.route('/camera/<string:name>')
 def camera(name):
     return CONFIG.camera_config(name)
+
+
+@app.route('/sky/<string:name>')
+def sky(name):
+    return CONFIG.sky_config(name)
 
 
 @app.route('/snr', methods=['POST'])

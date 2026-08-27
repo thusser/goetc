@@ -10,7 +10,7 @@ import pandas as pd
 import yaml
 
 import goetc
-from goetc.simulation import Camera, Telescope
+from goetc.simulation import Camera, Sky, Telescope
 from goetc.spectrum import XYData, QE, Spectrum, Bandpass
 
 
@@ -21,6 +21,7 @@ class DATA(Enum):
     OPTICS = 'optics'
     BANDPASS = 'bandpass'
     SPECTRUM = 'spectrum'
+    SKY = 'sky'
 
 
 def snake(text: str):
@@ -66,6 +67,7 @@ class Config:
         self.config[DATA.OPTICS] = self._list_csv(DATA.OPTICS)
         self.config[DATA.TELESCOPE] = self._list_yaml(DATA.TELESCOPE)
         self.config[DATA.SPECTRUM] = self._list_csv(DATA.SPECTRUM)
+        self.config[DATA.SKY] = self._list_yaml(DATA.SKY)
 
     def _list_yaml(self, category: DATA, group: str = None):
         filenames = [os.path.basename(f) for f in glob.glob(self._data_path('*.yaml', category=category))]
@@ -187,6 +189,15 @@ class Config:
 
     def vega_spectrum(self):
         return Spectrum(self.path('alpha_lyr_stis_010.csv'))
+
+    def sky_config(self, name: str):
+        if name not in self.config[DATA.SKY]:
+            raise ValueError('Sky "%s" not found.' % name)
+        filename = self.config[DATA.SKY][name]
+        return self._load_yaml(filename, category=DATA.SKY)
+
+    def sky(self, name: str):
+        return Sky(**self.sky_config(name))
 
 
 CONFIG = Config()

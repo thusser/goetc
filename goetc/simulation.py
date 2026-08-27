@@ -100,7 +100,7 @@ class Camera:
 
 class Sky:
     def __init__(self, magnitude: float = 22.0, seeing: float = 1.0, airmass: float = 2.0,
-                 extinction: float = 0.2):
+                 extinction: float = 0.2, name: str = None):
         """
         Args:
             magnitude: Surface brightness of the sky in mag/arcsec^2, in the
@@ -108,9 +108,11 @@ class Sky:
             seeing: Seeing in arcsec.
             airmass: Airmass.
             extinction: Atmospheric extinction in mag/airmass.
+            name: Optional site name (e.g. from a preset).
         """
 
         # store
+        self.name = name
         self.magnitude = magnitude
         self.seeing = Angle(c(seeing, u.arcsec))
         self.airmass = airmass

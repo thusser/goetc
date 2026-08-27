@@ -8,6 +8,7 @@ let app = new Vue({
             bandpass: 'Bessel/V'
         },
         sky: {
+            name: null,
             magnitude: 22.0,
             seeing: 1.0,
             airmass: 2.0,
@@ -58,6 +59,12 @@ let app = new Vue({
                 this.set_camera(response.data, this.simulation.binning);
             });
         },
+        'sky.name': function (new_sky, old_sky) {
+            if (!new_sky) return;
+            axios.get('/sky/' + new_sky).then(response => {
+                this.set_sky(response.data);
+            });
+        },
         'simulation.binning': function (new_bin, old_bin) {
             axios.get('/camera/' + this.camera.name).then(response => {
                 this.set_camera(response.data, new_bin);
@@ -88,6 +95,12 @@ let app = new Vue({
             this.camera.gain = Array.isArray(camera.gain) ? camera.gain[binning - 1] : camera.gain;
             this.camera.bias = Array.isArray(camera.bias) ? camera.bias[binning - 1] : camera.bias;
             this.camera.qe = camera.qe;
+        },
+        set_sky(sky) {
+            this.sky.magnitude = sky.magnitude;
+            this.sky.seeing = sky.seeing;
+            this.sky.airmass = sky.airmass;
+            this.sky.extinction = sky.extinction;
         },
         signal_to_noise() {
             axios.post('/snr', {
