@@ -53,19 +53,21 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
 
     @pyqtSlot(float, name='on_spinExpTime_valueChanged')
     @pyqtSlot(str, name='on_comboFilter_currentTextChanged')
-    @pyqtSlot(str, name='on_spinAperRadius_valueChanged')
+    @pyqtSlot(float, name='on_spinAperRadius_valueChanged')
     def value_changed(self):
         self.values_changed.emit(self.bandpass(), self.spinExpTime.value())
         self.simulate()
 
     def simulate(self):
         # got everything?
-        if self.sky is None or self.camera is None or self.telescope is None or isinstance(self.camera.qe, float):
+        if self.sky is None or self.camera is None or self.telescope is None \
+                or self.spectrum is None or isinstance(self.camera.qe, float):
             return
 
-        # get exposure time and aperture radius
+        # get exposure time, aperture radius and effective gain
         exp_time = self.spinExpTime.value()
         aper_radius = self.spinAperRadius.value()
+        gain = self.camera.gain_binning(self.binning)
 
         # simulate
         sim = Simulation(self.telescope, self.camera, self.bandpass())
@@ -82,15 +84,15 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
 
         # aperture
         self.linePeakADU.setText(f'{sim.peak:.0f}')
-        self.linePeakE.setText(f'{sim.peak * self.camera.gain:0.2f}'.replace('electron', 'e-'))
+        self.linePeakE.setText(f'{sim.peak * gain:0.2f}'.replace('electron', 'e-'))
         self.lineTargetADU.setText(f'{sim.target_counts:.0f}')
-        self.lineTargetE.setText(f'{sim.target_counts * self.camera.gain:0.2f}'.replace('electron', 'e-'))
+        self.lineTargetE.setText(f'{sim.target_counts * gain:0.2f}'.replace('electron', 'e-'))
         self.lineSkyADU.setText(f'{sim.sky_counts:.0f}')
-        self.lineSkyE.setText(f'{sim.sky_counts * self.camera.gain:0.2f}'.replace('electron', 'e-'))
+        self.lineSkyE.setText(f'{sim.sky_counts * gain:0.2f}'.replace('electron', 'e-'))
         self.lineDarkADU.setText(f'{sim.dark_counts:.0f}')
-        self.lineDarkE.setText(f'{sim.dark_counts * self.camera.gain:0.2f}'.replace('electron', 'e-'))
+        self.lineDarkE.setText(f'{sim.dark_counts * gain:0.2f}'.replace('electron', 'e-'))
         self.lineRONADU.setText(f'{sim.ron_counts:.0f}')
-        self.lineRONE.setText(f'{sim.ron_counts * self.camera.gain:0.2f}'.replace('electron', 'e-'))
+        self.lineRONE.setText(f'{sim.ron_counts * gain:0.2f}'.replace('electron', 'e-'))
 
         # S/N
         self.spinSNR.setValue(sim.snr)

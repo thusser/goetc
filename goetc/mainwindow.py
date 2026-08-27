@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
 
         # stretcher
         self.settings_layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        self.settings_layout.setStretch(4, 2.)
+        self.settings_layout.setStretch(4, 2)
 
         # plot
         self.figure = plt.Figure()
@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
 
         # plot QE
         qe = self.widget_camera.camera().qe
-        if qe is not None:
+        if qe is not None and not isinstance(qe, float):
             self.ax2.plot(qe.x, qe.y, 'g', lw=1, label='QE')
 
         # finish drawing
