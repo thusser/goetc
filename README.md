@@ -23,6 +23,10 @@ Run (Docker)::
     docker build -t goetc .
     docker run -p 9300:9300 goetc
 
+Run the tests::
+
+    uv run pytest
+
 Use in a script::
 
     import astropy.units as u
