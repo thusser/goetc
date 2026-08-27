@@ -7,3 +7,5 @@ matplotlib~=3.4.1
 scipy~=1.6.3
 Flask~=1.1.2
 gunicorn==20.1.0
+# Flask 1.1.2/jinja2 2.11 need markupsafe<2.1 (soft_unicode removed in 2.1)
+markupsafe<2.1
