@@ -3,6 +3,8 @@
 
 # Virtual environment
 venv/
+.venv/
+.uv-cache/
 
 # Python
 __pycache__/

@@ -2,19 +2,26 @@
 
 Exposure time calculator for the IAG's telescope.
 
-Requires Python >= 3.11 (tested with 3.12).
+Requires [uv](https://docs.astral.sh/uv/) and Python >= 3.11 (tested with 3.12).
 
 Download::
 
     git clone https://github.com/thusser/goetc.git
     cd goetc
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
+    uv sync
 
-Run::
+Run (desktop GUI)::
 
-    python -m goetc
+    uv run python -m goetc
+
+Run (web app)::
+
+    uv run gunicorn --bind 0.0.0.0:9300 --workers=2 --threads=4 --worker-class=gthread goetc.web:app
+
+Run (Docker)::
+
+    docker build -t goetc .
+    docker run -p 9300:9300 goetc
 
 Use in a script::
 
