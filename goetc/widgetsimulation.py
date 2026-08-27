@@ -60,8 +60,7 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
 
     def simulate(self):
         # got everything?
-        if self.sky is None or self.camera is None or self.telescope is None \
-                or self.spectrum is None or isinstance(self.camera.qe, float):
+        if self.sky is None or self.camera is None or self.telescope is None or self.spectrum is None:
             return
 
         # get exposure time, aperture radius and effective gain
@@ -93,6 +92,3 @@ class WidgetSimulation(QWidget, Ui_WidgetSimulation):
         self.lineDarkE.setText(f'{sim.dark_counts * gain:0.2f}'.replace('electron', 'e-'))
         self.lineRONADU.setText(f'{sim.ron_counts:.0f}')
         self.lineRONE.setText(f'{sim.ron_counts * gain:0.2f}'.replace('electron', 'e-'))
-
-        # S/N
-        self.spinSNR.setValue(sim.snr)

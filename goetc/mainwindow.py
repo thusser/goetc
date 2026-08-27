@@ -3,7 +3,6 @@ import numpy as np
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QVBoxLayout, QSpacerItem, QSizePolicy, QScrollArea, QWidget
-from astropy.coordinates import Angle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import matplotlib.pyplot as plt
 
@@ -132,7 +131,7 @@ class MainWindow(QMainWindow):
 
         # plot QE
         qe = self.widget_camera.camera().qe
-        if qe is not None and not isinstance(qe, float):
+        if qe is not None:
             self.ax2.plot(qe.x, qe.y, 'g', lw=1, label='QE')
 
         # finish drawing
