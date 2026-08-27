@@ -254,7 +254,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" :value="results.peak" readonly>
                 <span class="input-group-text">ADU</span>
-                <input type="text" class="form-control" readonly>
+                <input type="text" class="form-control" :value="results.peak_e" readonly>
                 <span class="input-group-text">e-</span>
             </div>
         </div>
@@ -266,7 +266,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" :value="results.target" readonly>
                 <span class="input-group-text">ADU</span>
-                <input type="text" class="form-control" readonly>
+                <input type="text" class="form-control" :value="results.target_e" readonly>
                 <span class="input-group-text">e-</span>
             </div>
         </div>
@@ -278,7 +278,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" :value="results.dark" readonly>
                 <span class="input-group-text">ADU</span>
-                <input type="text" class="form-control" readonly>
+                <input type="text" class="form-control" :value="results.dark_e" readonly>
                 <span class="input-group-text">e-</span>
             </div>
         </div>
@@ -290,7 +290,7 @@
             <div class="input-group">
                 <input type="text" class="form-control" :value="results.sky" readonly>
                 <span class="input-group-text">ADU</span>
-                <input type="text" class="form-control" readonly>
+                <input type="text" class="form-control" :value="results.sky_e" readonly>
                 <span class="input-group-text">e-</span>
             </div>
         </div>
