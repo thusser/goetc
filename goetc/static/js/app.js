@@ -80,6 +80,7 @@ let app = new Vue({
                 this.config = response.data;
                 this.telescope.name = this.config.telescopes[0];
                 this.camera.name = this.config.cameras[0];
+                this.sky.name = this.config.skies.find(s => s === 'Göttingen') || this.config.skies[0];
             });
         },
         set_telescope(telescope) {
